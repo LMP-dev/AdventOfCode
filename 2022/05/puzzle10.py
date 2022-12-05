@@ -21,9 +21,9 @@ class CargoStacks:
         self._fill_cargo_lines(crates)
 
     def move_crates(self, number: int, ini_stack: str, end_stack: str) -> None:
-        for _ in range(number):
-            removed_cargo = self.cargo_lines[ini_stack].pop()
-            self.cargo_lines[end_stack].extend(removed_cargo)
+        removed_cargo = [self.cargo_lines[ini_stack].pop() for _ in range(number)]
+        removed_cargo.reverse()
+        self.cargo_lines[end_stack].extend(removed_cargo)
 
     def give_last_creates(self) -> str:
         last_crates = [stack[-1] for stack in self.cargo_lines.values()]
