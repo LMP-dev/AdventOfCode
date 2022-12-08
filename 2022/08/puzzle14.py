@@ -90,7 +90,6 @@ def main() -> None:
     grid = create_tree_grid_matrix(INPUT_FILE)
     tree_grid = TreeGrid(grid)
     visibility_grid = tree_grid.calculate_visibility()
-    # print(visibility_grid)
     print(visibility_grid.sum())
 
 
