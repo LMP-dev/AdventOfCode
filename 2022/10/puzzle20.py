@@ -12,16 +12,16 @@ class Clockcircuit:
     def __init__(self) -> None:
         self.cycle = 1
         self.register = 1
-        self.crt = CRT(self)
+        self.crt = CRT()
 
     def noop(self) -> None:
-        self.crt.check_sprite()
+        self.crt.check_sprite(self.cycle, self.register)
         self.cycle += 1
 
     def addx(self, v: int) -> None:
-        self.crt.check_sprite()
+        self.crt.check_sprite(self.cycle, self.register)
         self.cycle += 1
-        self.crt.check_sprite()
+        self.crt.check_sprite(self.cycle, self.register)
         self.cycle += 1
         self.register += v
 
@@ -30,21 +30,20 @@ class CRT:
     WIDE = 40
     HEIGH = 6
 
-    def __init__(self, clock_circuit: Clockcircuit) -> None:
-        self.cpu = clock_circuit
+    def __init__(self) -> None:
         self.screen = np.zeros((self.HEIGH, self.WIDE))
 
-    def _current_screen_position(self) -> tuple[int]:
+    def _current_screen_position(self, cycle: int) -> tuple[int]:
         """returns row and column in screen"""
-        return divmod(self.cpu.cycle - 1, 40)
+        return divmod(cycle - 1, 40)
 
     def _sprite_visible(self, pixel: int, register: int) -> bool:
         return pixel >= register - 1 and pixel <= register + 1
 
-    def check_sprite(self) -> None:
-        screen_pos = self._current_screen_position()
+    def check_sprite(self, cycle: int, register: int) -> None:
+        screen_pos = self._current_screen_position(cycle)
         pixel = screen_pos[1]
-        if self._sprite_visible(pixel, self.cpu.register):
+        if self._sprite_visible(pixel, register):
             self.screen[screen_pos] = 1
 
     def render(self) -> int:
