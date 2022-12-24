@@ -4,7 +4,7 @@ import time
 start = time.time()
 
 INPUT_FILE = Path(__file__).parent / "input.txt"
-# INPUT_FILE = Path(__file__).parent / "test_input.txt"
+# INPUT_FILE = Path(__file__).parent / "test_input.txt"  # Solution = 3068
 
 """
 Chamber, 7 units wide (col 0 and 8 are walls):
