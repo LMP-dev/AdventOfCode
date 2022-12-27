@@ -5,7 +5,9 @@ from collections import deque
 start = time.time()
 
 INPUT_FILE = Path(__file__).parent / "input.txt"
-# INPUT_FILE = Path(__file__).parent / "test_input.txt"  # sol = 3
+# INPUT_FILE = Path(__file__).parent / "test_input.txt"  # sol = 1623178306
+
+DECRYPTION_KEY = 811589153
 
 
 def parse_input(file_path: Path) -> list[int]:
@@ -14,9 +16,7 @@ def parse_input(file_path: Path) -> list[int]:
     return list_numbers
 
 
-def main():
-    numbers = parse_input(INPUT_FILE)
-    list_numbers = deque(enumerate(numbers))
+def mix(list_numbers: deque[tuple[int]]) -> deque[tuple[list]]:
     lenght_list = len(list_numbers)
     for i in range(lenght_list):
         # rotate queue to start with number
@@ -29,12 +29,20 @@ def main():
         for _ in range(rotate_by):
             list_numbers.append(list_numbers.popleft())
         list_numbers.append(current_number)
+    return list_numbers
+
+
+def main():
+    numbers = parse_input(INPUT_FILE)
+    list_numbers = deque((i, num * DECRYPTION_KEY) for i, num in enumerate(numbers))
+    for _ in range(10):
+        list_numbers = mix(list_numbers)
 
     # Calculate score
     while list_numbers[0][1] != 0:
         list_numbers.append(list_numbers.popleft())
-    part_1 = sum(list_numbers[num % lenght_list][1] for num in [1000, 2000, 3000])
-    print(part_1)
+    part_2 = sum(list_numbers[num % len(list_numbers)][1] for num in [1000, 2000, 3000])
+    print(part_2)
 
 
 if __name__ == "__main__":
