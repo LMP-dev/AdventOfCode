@@ -1,8 +1,6 @@
 from pathlib import Path
 import time
 
-start = time.time()
-
 INPUT_FILE = Path(__file__).parent / "input.txt"
 # INPUT_FILE = Path(__file__).parent / "test_input.txt"  # Solution = 64
 
