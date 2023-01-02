@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 INPUT_FILE = Path(__file__).parent / "input.txt"
-# INPUT_FILE = Path(__file__).parent / "test_input.txt"  # sol = 5031
+# INPUT_FILE = Path(__file__).parent / "test_input.txt"  # sol = 6032
 
 
 class Orientation(Enum):
@@ -72,18 +72,12 @@ class BoardMap:
         2 - empty space
     """
 
-    ROTATION_DIR_R = [
+    ROTATION_DIR = [
         Orientation.RIGTH,
         Orientation.DOWN,
         Orientation.LEFT,
         Orientation.TOP,
         Orientation.RIGTH,
-    ]
-
-    ROTATION_DIR_L = [
-        Orientation.RIGTH,
-        Orientation.DOWN,
-        Orientation.LEFT,
         Orientation.TOP,
     ]
 
@@ -182,12 +176,12 @@ class BoardMap:
             else:
                 # Change facing direction
                 if direction == "R":
-                    new_ori = self.ROTATION_DIR_R[
-                        self.ROTATION_DIR_R.index(self.explorer.ori) + 1
+                    new_ori = self.ROTATION_DIR[
+                        self.ROTATION_DIR.index(self.explorer.ori) + 1
                     ]
                 elif direction == "L":
-                    new_ori = self.ROTATION_DIR_L[
-                        self.ROTATION_DIR_L.index(self.explorer.ori) - 1
+                    new_ori = self.ROTATION_DIR[
+                        self.ROTATION_DIR.index(self.explorer.ori) - 1
                     ]
                 self.explorer.ori = new_ori
 
