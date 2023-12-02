@@ -1,14 +1,33 @@
 from pathlib import Path
+import re
+from dataclasses import dataclass
 
 DATA_FILE_NAME = "input.txt"
 INPUT_FILE = Path(__file__).parent / DATA_FILE_NAME
-TEST_INPUT_FILE = Path(__file__).parent / "example_1.txt"
+DATA_TEST_FILE_NAME = "example_1.txt"
+TEST_INPUT_FILE = Path(__file__).parent / DATA_TEST_FILE_NAME
 
 
-def parse_input(file_path: Path) -> list[str]:
+@dataclass
+class CubeGrab:
+    red: int
+    green: int
+    blue: int
+
+
+class Game:
+    def __init__(self, id: int, plays: list[CubeGrab]) -> None:
+        self.id = id
+        self.plays = plays
+
+
+def parse_input(file_path: Path) -> list[Game]:
     with open(file_path) as file:
-        lines = [line.strip() for line in file]
-    return lines
+        games = []
+        for raw_line in file:
+            line = raw_line.strip()
+            id_pattern = "Game (\d+):"
+    return games
 
 
 def is_it_a_number(character: str) -> tuple[bool, int | str]:
@@ -21,25 +40,11 @@ def is_it_a_number(character: str) -> tuple[bool, int | str]:
 
 
 def solve_01(data: list[str]) -> int:
-    calibration_values = []
-    for line in data:
-        first = None
-        last = None
-        for begining, end in zip(line, reversed(line)):
-            if not first:
-                is_number, val = is_it_a_number(begining)
-                if is_number:
-                    first = val
-            if not last:
-                is_number, val = is_it_a_number(end)
-                if is_number:
-                    last = val
-        calibration_values.append(10 * first + last)
-    return sum(calibration_values)
+    return
 
 
 def main() -> None:
-    data = parse_input(INPUT_FILE)
+    data = parse_input(TEST_INPUT_FILE)
     solution = solve_01(data)
     print(solution)
 

@@ -3,7 +3,8 @@ import re
 
 DATA_FILE_NAME = "input.txt"
 INPUT_FILE = Path(__file__).parent / DATA_FILE_NAME
-TEST_INPUT_FILE = Path(__file__).parent / "example_2.txt"
+TEST_FILE_NAME = "example_3.txt"
+TEST_INPUT_FILE = Path(__file__).parent / TEST_FILE_NAME
 
 
 def parse_input(file_path: Path) -> list[str]:
@@ -35,12 +36,21 @@ DIGITS_MAPPING = {
     "nine": 9,
 }
 
+"""
+example 3
+92
+11
+11
+28
+"""
+
 
 def solve_02(data: list[str]) -> int:
     calibration_values = []
     for line in data:
         first = None  # left to right
         last = None  # right to left
+        partial_digits = ["", "", "", "", "", "", "", "", ""]
         partial_word = ""
         # Left to right loop
         for char in line:
@@ -68,6 +78,7 @@ def solve_02(data: list[str]) -> int:
 
         # Right to left loop
         partial_word = ""  # reset variable
+        partial_digits = ["", "", "", "", "", "", "", "", ""]  # Reset variable
         for char in reversed(line):
             # Check digit
             is_number, val = is_it_a_number(char)
@@ -76,27 +87,31 @@ def solve_02(data: list[str]) -> int:
                 last = val
                 break
             # Check written digits
-            partial_word += char
-            if partial_word in REVERSED_WRITTEN_DIGIT:
-                # Found digit in written form, store and stop loop
-                last = DIGITS_MAPPING[partial_word[::-1]]
+            # partial_word += char
+            partial_digits = [partial + char for partial in partial_digits]
+            for partial in partial_digits:
+                if partial in REVERSED_WRITTEN_DIGIT:
+                    last = DIGITS_MAPPING[partial[::-1]]
+                    break
+            if last:
                 break
-            else:
-                found_partial_match = False
-                for word in REVERSED_WRITTEN_DIGIT:
-                    if word.startswith(partial_word):
-                        found_partial_match = True
-                        break  # stops loop from one to nine check
-                if not found_partial_match:
+            # Check if partially there is some match with a digit
+            found_partial_match = False
+            for i, (word, partial) in enumerate(
+                zip(REVERSED_WRITTEN_DIGIT, partial_digits)
+            ):
+                if word.startswith(partial):
+                    found_partial_match = True
+                else:
                     # Reset partial word
-                    partial_word = char
-
+                    partial_digits[i] = char
+        print(calibration_values)
         calibration_values.append(10 * first + last)
     return sum(calibration_values)
 
 
 def main() -> None:
-    data = parse_input(INPUT_FILE)
+    data = parse_input(TEST_INPUT_FILE)
     solution = solve_02(data)
     print(solution)  # 54140 (too high)
     # lines 3 (one less) and 7 wrong (one more)
