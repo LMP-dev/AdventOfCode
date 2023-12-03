@@ -1,10 +1,7 @@
 from pathlib import Path
 from typing import Iterator
 
-DATA_FILE_NAME = "input.txt"
-DATA_TEST_FILE_NAME = "example_1.txt"
-INPUT_FILE = Path(__file__).parent / DATA_FILE_NAME
-TEST_INPUT_FILE = Path(__file__).parent / DATA_TEST_FILE_NAME
+INPUT_FILE_PATH = Path(__file__).parent
 
 
 def parse_input(file_path: Path) -> list[str]:
@@ -54,7 +51,7 @@ def solve_01(data: list[str]) -> int:
                 # Check if is after a number
                 if partial_number:
                     number = int(partial_number)
-                    last_row_numbers_data.append((number, number_columns))
+                    current_row_numbers_data.append((number, number_columns))
                     # Check if there was a symbol before the number
                     if is_after_symbol:
                         part_numbers.add(number)
@@ -68,8 +65,17 @@ def solve_01(data: list[str]) -> int:
                     number_columns = []  # reset
                     is_after_symbol = False
         # edge case where number is end of row:
-        ...
-
+        if partial_number:
+            number = int(partial_number)
+            current_row_numbers_data.append((number, number_columns))
+            # Check if there was a symbol before the number
+            if is_after_symbol:
+                part_numbers.add(number)
+            else:
+                # Check symbols in last row
+                for i in last_row_symbol_indexes:
+                    if is_num_in_range(i, number_columns):
+                        part_numbers.add(number)
         # Update last row references
         last_row_numbers_data = current_row_numbers_data
         last_row_symbol_indexes = current_row_symbol_indexes
@@ -87,11 +93,13 @@ def is_num_in_range(char_index: int, number_indixes: Iterator[int]) -> bool:
 
 
 def main() -> None:
-    data = parse_input(TEST_INPUT_FILE)
+    # input.txt | example_1.txt | example_2.txt
+    data = parse_input(INPUT_FILE_PATH / "example_1_v2.txt")
     solution = solve_01(data)
     print(solution)
-    """Numbers test not detected:
-    467, 633, 755, 598"""
+    """Sol v2:
+    467, 114, 35, 633, 2, 617, 1, 5 664, 598, 7, 775
+    Sum = 3898"""
 
 
 if __name__ == "__main__":
