@@ -12,7 +12,7 @@ def parse_input(file_path: Path) -> list[str]:
 
 def solve_01(data: list[str]) -> int:
     # variables initialization
-    part_numbers: set[int] = set()  # Assuming no repeated Part nº.
+    part_numbers: list[int] = list()  # Assuming no repeated Part nº.
     last_row_numbers_data: list[tuple[int, list[int]]] = []
     last_row_symbol_indexes: list[int] = []
     for row in data:
@@ -36,7 +36,7 @@ def solve_01(data: list[str]) -> int:
                 # Check number in current row
                 if partial_number:
                     number = int(partial_number)
-                    part_numbers.add(number)
+                    part_numbers.append(number)
                     current_row_numbers_data.append((number, number_columns))
                     # Reset variables
                     partial_number = ""  # reset
@@ -45,7 +45,7 @@ def solve_01(data: list[str]) -> int:
                 # Check number in last row
                 for num_data in last_row_numbers_data:
                     if is_num_in_range(index, num_data[1]):
-                        part_numbers.add(num_data[0])
+                        part_numbers.append(num_data[0])
             # char is a ".":
             else:
                 # Check if is after a number
@@ -54,12 +54,12 @@ def solve_01(data: list[str]) -> int:
                     current_row_numbers_data.append((number, number_columns))
                     # Check if there was a symbol before the number
                     if is_after_symbol:
-                        part_numbers.add(number)
+                        part_numbers.append(number)
                     else:
                         # Check symbols in last row
                         for i in last_row_symbol_indexes:
                             if is_num_in_range(i, number_columns):
-                                part_numbers.add(number)
+                                part_numbers.append(number)
                     # Reset variables
                     partial_number = ""  # reset
                     number_columns = []  # reset
@@ -70,16 +70,15 @@ def solve_01(data: list[str]) -> int:
             current_row_numbers_data.append((number, number_columns))
             # Check if there was a symbol before the number
             if is_after_symbol:
-                part_numbers.add(number)
+                part_numbers.append(number)
             else:
                 # Check symbols in last row
                 for i in last_row_symbol_indexes:
                     if is_num_in_range(i, number_columns):
-                        part_numbers.add(number)
+                        part_numbers.append(number)
         # Update last row references
         last_row_numbers_data = current_row_numbers_data
         last_row_symbol_indexes = current_row_symbol_indexes
-    print(part_numbers)
     return sum(part_numbers)
 
 
@@ -94,12 +93,12 @@ def is_num_in_range(char_index: int, number_indixes: Iterator[int]) -> bool:
 
 def main() -> None:
     # input.txt | example_1.txt | example_2.txt
-    data = parse_input(INPUT_FILE_PATH / "example_1_v2.txt")
+    data = parse_input(INPUT_FILE_PATH / "example_1.txt")
     solution = solve_01(data)
-    print(solution)
-    """Sol v2:
-    467, 114, 35, 633, 2, 617, 1, 5 664, 598, 7, 775
-    Sum = 3898"""
+    print(f"The solution of the example is {solution}")
+    data = parse_input(INPUT_FILE_PATH / "input.txt")
+    solution = solve_01(data)
+    print(f"The solution of part 1 is {solution}")
 
 
 if __name__ == "__main__":
