@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Iterator
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -17,9 +16,9 @@ def parse_input(file_path: Path) -> list[tuple[list[int], list[int]]]:
     scratch_cards = []
     with open(file_path) as file:
         for raw_line in file:
-            # Parsing
             line = raw_line.strip()
             _, card_numbers_section = line.split(":")
+            # Parsing numbers
             winning_numbers_section, own_numbers_section = card_numbers_section.split(
                 "|"
             )
@@ -47,7 +46,7 @@ def solve_01(data: list[tuple[list[int], list[int]]]) -> int:
 
 
 def main() -> None:
-    # input.txt | example_1.txt | example_2.txt
+    # input.txt | example_1.txt
     data = parse_input(INPUT_FILE_PATH / "example_1.txt")
     solution = solve_01(data)
     print(f"The solution of the example is {solution}")
