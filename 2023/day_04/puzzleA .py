@@ -34,20 +34,16 @@ def parse_input(file_path: Path) -> list[tuple[list[int], list[int]]]:
 
 def solve_01(data: list[tuple[list[int], list[int]]]) -> int:
     # variables initialization
-    part_numbers: list[int] = list()  # Assuming no repeated Part nº.
-    last_row_numbers_data: list[tuple[int, list[int]]] = []
-    last_row_symbol_indexes: list[int] = []
+    total_points = 0
+    for winning, own in data:
+        matches = 0
+        for number in own:
+            if number in winning:
+                matches += 1
+        if matches:
+            total_points += pow(2, matches - 1)
 
-    return sum(part_numbers)
-
-
-def is_num_in_range(char_index: int, number_indixes: Iterator[int]) -> bool:
-    """Function to check numbers on rows top or below a character row"""
-    position_to_check = [char_index - 1, char_index, char_index + 1]
-    for pos in position_to_check:
-        if pos in number_indixes:
-            return True
-    return False
+    return total_points
 
 
 def main() -> None:
