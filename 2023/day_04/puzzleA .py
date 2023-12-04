@@ -51,7 +51,7 @@ def main() -> None:
     solution = solve_01(data)
     print(f"The solution of the example is {solution}")
     data = parse_input(INPUT_FILE_PATH / "input.txt")
-    solution = solve_01(data)
+    solution = solve_01(data)  # 25004
     print(f"The solution of part 1 is {solution}")
 
 
