@@ -62,7 +62,6 @@ def parse_input(
     humidity_to_location_map = Mapper()
 
     with open(file_path) as file:
-        print(f"------ OPENED FILE!")
         # Initialize flags for parsing
         inside_seed_to_soil = False
         inside_soil_to_fertilizer = False
@@ -82,7 +81,6 @@ def parse_input(
             # Parse seed-to-soil map
             elif line.startswith("seed-to-soil"):
                 inside_seed_to_soil = True
-                print(f"------ FOUND line correpsonding to seed-to-soil")
             elif inside_seed_to_soil:
                 if not line:
                     inside_seed_to_soil = False
@@ -98,7 +96,6 @@ def parse_input(
             # Parse soil-to-fertilizer map
             elif line.startswith("soil-to-fertilizer"):
                 inside_soil_to_fertilizer = True
-                print(f"------ FOUND line correpsonding to soil-to-fertilizer")
             elif inside_soil_to_fertilizer:
                 if not line:  # Detects empty line separating maps
                     inside_soil_to_fertilizer = False
@@ -114,7 +111,6 @@ def parse_input(
             # Parse fertilizer-to-water map
             elif line.startswith("fertilizer-to-water"):
                 inside_fertilizer_to_water = True
-                print(f"------ FOUND line correpsonding to fertilizer-to-water")
             elif inside_fertilizer_to_water:
                 if not line:
                     inside_fertilizer_to_water = False
@@ -130,7 +126,6 @@ def parse_input(
             # Parse water-to-light map
             elif line.startswith("water-to-light"):
                 inside_water_to_light = True
-                print(f"------ FOUND line correpsonding to water-to-light")
             elif inside_water_to_light:
                 if not line:
                     inside_water_to_light = False
@@ -146,7 +141,6 @@ def parse_input(
             # Parse light-to-temperature map
             elif line.startswith("light-to-temperature"):
                 inside_light_to_temperature = True
-                print(f"------ FOUND line correpsonding to light-to-temperature")
             elif inside_light_to_temperature:
                 if not line:
                     inside_light_to_temperature = False
@@ -162,7 +156,6 @@ def parse_input(
             # Parse temperature-to-humidity map
             elif line.startswith("temperature-to-humidity"):
                 inside_temperature_to_humidity = True
-                print(f"------ FOUND line correpsonding to temperature-to-humidity")
             elif inside_temperature_to_humidity:
                 if not line:
                     inside_temperature_to_humidity = False
@@ -178,7 +171,6 @@ def parse_input(
             # Parse humidity-to-location map
             elif line.startswith("humidity-to-location"):
                 inside_humidity_to_location = True
-                print(f"------ FOUND line correpsonding to humidity-to-location")
             elif inside_humidity_to_location:
                 if not line:
                     inside_humidity_to_location = False
@@ -214,7 +206,6 @@ def solve_01(data: list[int]) -> int:
     for seed in seeds:
         location = finder.get_location(seed)
         minimum_location = min(minimum_location, location)
-        print(f"FINISHED MAPPING for seed: {seed}")
 
     return minimum_location
 
