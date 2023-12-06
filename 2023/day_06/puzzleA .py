@@ -1,6 +1,5 @@
 from pathlib import Path
-from dataclasses import dataclass
-import math
+import re
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -16,11 +15,9 @@ def read_data(
 def parse_input(file_content: list[str]) -> list[tuple[int, int]]:
     _, times = file_content[0].split(":")
     _, distances = file_content[1].split(":")
-    raw_times_list = times.strip().split(" ")
-    raw_distances_list = distances.strip().split(" ")
-    times_list = []
-    distances_list = 
-    return [(int(time), int(dist)) for time, dist in zip(times_list, distances_list)]
+    match_times = re.findall(r"\d+", times)
+    match_distances = re.findall(r"\d+", distances)
+    return [(int(time), int(dist)) for time, dist in zip(match_times, match_distances)]
 
 
 def solve_01(data: list[tuple[int, int]]) -> int:
@@ -45,7 +42,8 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example is {solution}")
-    data = parse_input(INPUT_FILE_PATH / "input.txt")
+    file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of part 1 is {solution}")
 
