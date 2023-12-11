@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import Protocol, Iterable
+from typing import Iterable, Protocol
 
 
 class HandType(Enum):
@@ -19,7 +19,15 @@ class Hand(Protocol):
 
 class HighCardHand:
     def __init__(self, hand: tuple[int, int, int]) -> None:
-        ...
+        hand = list(hand)
+        hand.sort()  # sort before asigning
+        (
+            self.lowest_card,
+            self.low_card,
+            self.middle_card,
+            self.high_card,
+            self.highest_card,
+        ) = hand
 
     def points(self) -> int:
         ...
@@ -27,7 +35,24 @@ class HighCardHand:
 
 class PairHand:
     def __init__(self, hand: tuple[int, int, int]) -> None:
-        ...
+        self.pair_card: int = None
+        self.high_card: int = None
+        self.middle_card: int = None
+        self.low_card: int = None
+
+        hand = list(hand)
+        hand.sort()  # sort before asigning
+        for card in hand:
+            if 2 == hand.count(card):
+                self.pair_card = card
+            elif 1 == hand.count(card):
+                if self.low_card:
+                    if self.middle_card:
+                        self.high_card = card
+                    else:
+                        self.middle_card = card
+                else:
+                    self.low_card = card
 
     def points(self) -> int:
         ...
@@ -35,7 +60,20 @@ class PairHand:
 
 class TwoPairHand:
     def __init__(self, hand: tuple[int, int, int]) -> None:
-        ...
+        self.low_pair_card: int = None
+        self.high_pair_card: int = None
+        self.high_card: int = None
+
+        hand = list(hand)
+        hand.sort()  # sort before asigning
+        for card in hand:
+            if 2 == hand.count(card):
+                if self.low_pair_card:
+                    self.high_pair_card = card
+                else:
+                    self.low_pair_card = card
+            elif 1 == hand.count(card):
+                self.high_card = card
 
     def points(self) -> int:
         ...
@@ -47,12 +85,16 @@ class TripleHand:
         self.high_card: int = None
         self.low_card: int = None
 
+        hand = list(hand)
+        hand.sort()  # sort before asigning
         for card in hand:
             if 3 == hand.count(card):
                 self.triple_card = card
             elif 1 == hand.count(card):
-                ### TODO
-                ...
+                if self.low_card:
+                    self.high_card = card
+                else:
+                    self.low_card = card
 
     def points(self) -> int:
         ...
