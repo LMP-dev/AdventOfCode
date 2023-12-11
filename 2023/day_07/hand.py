@@ -143,8 +143,6 @@ class FullHouseHand:
                 self.triple_card = card
             elif 2 == hand.count(card):
                 self.pair_card = card
-            if self.triple_card and self.pair_card:
-                break
 
     def points(self) -> int:
         return self.BASE_POINTS + 100 * self.triple_card + self.pair_card
@@ -159,14 +157,12 @@ class PokerHand:
 
         for card in hand:
             if 4 == hand.count(card):
-                self.poker = card
+                self.poker_card = card
             elif 1 == hand.count(card):
                 self.high_card = card
-            if self.poker_card and self.high_card:
-                break
 
     def points(self) -> int:
-        return self.BASE_POINTS + 100 * self.poker + self.high_card
+        return self.BASE_POINTS + 100 * self.poker_card + self.high_card
 
 
 class RePokerHand:

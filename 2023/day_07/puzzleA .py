@@ -48,6 +48,24 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of part 1 is {solution}")
+    """
+    1 - 2   10
+    2 - 3   21
+    3 - 5   65
+    4 - 4   68
+    5 - 11  297
+    6 - 10  230
+    7 - 1   3
+    8 - 7   231
+    9 - 6   246
+    10 - 8  448
+    11 - 9  702
+    total = 2321
+    """
+    file_content = read_data(INPUT_FILE_PATH / "example_3.txt")
+    data = parse_input(file_content)
+    solution = solve_01(data)
+    print(f"The solution of the example 3 is {solution}")
 
 
 if __name__ == "__main__":
