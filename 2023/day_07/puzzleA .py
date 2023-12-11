@@ -1,5 +1,9 @@
+# Standard library
 from pathlib import Path
-from hand import CamelHand
+
+
+# Own modules
+from hand import Hand, HandType, create_hand_object
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -12,30 +16,45 @@ def read_data(
     return lines
 
 
-def hand_points(hand: list[str]) -> int:
+def convert_to_tuple_hand(hand: str) -> tuple[int, int, int, int, int]:
     mapping = {
         "A": 14,
         "K": 13,
         "Q": 12,
         "J": 11,
         "T": 10,
-        9: 9,
-        8: 8,
-        7: 7,
-        6: 6,
-        5: 5,
-        4: 4,
-        3: 3,
-        2: 2,
+        "9": 9,
+        "8": 8,
+        "7": 7,
+        "6": 6,
+        "5": 5,
+        "4": 4,
+        "3": 3,
+        "2": 2,
     }
 
+    converted_hand = []
+    for card in hand:
+        converted_hand.append(mapping[card])
+    return tuple(converted_hand)
 
-def parse_input(file_content: list[str]) -> list[int]:
-    """Transform hands to int value"""
-    return []
+
+def find_hand_category(hand: tuple[int, int, int, int, int]) -> HandType:
+    ...
 
 
-def solve_01(data: list[tuple[int, int]]) -> int:
+def parse_input(file_content: list[str]) -> list[Hand]:
+    hands = []
+    for line in file_content:
+        hand_str, bid = line.split(" ")
+        hand_tuple = convert_to_tuple_hand(hand_str)
+        hand_type = find_hand_category(hand_tuple)
+        hand_object = create_hand_object(hand_tuple, hand_type)
+        hands.append(hand_object)
+    return hands
+
+
+def solve_01(data: list[Hand]) -> int:
     return
 
 
