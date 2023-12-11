@@ -18,6 +18,8 @@ class Hand(Protocol):
 
 
 class HighCardHand:
+    BASE_POINTS = 0
+
     def __init__(self, hand: tuple[int, int, int]) -> None:
         hand = list(hand)
         hand.sort()  # sort before asigning
@@ -30,10 +32,19 @@ class HighCardHand:
         ) = hand
 
     def points(self) -> int:
-        ...
+        return (
+            self.BASE_POINTS
+            + 100000000 * self.highest_card
+            + 1000000 * self.high_card
+            + 10000 * self.middle_card
+            + 100 * self.low_card
+            + self.lowest_card
+        )
 
 
 class PairHand:
+    BASE_POINTS = 10000000000
+
     def __init__(self, hand: tuple[int, int, int]) -> None:
         self.pair_card: int = None
         self.high_card: int = None
@@ -55,10 +66,18 @@ class PairHand:
                     self.low_card = card
 
     def points(self) -> int:
-        ...
+        return (
+            self.BASE_POINTS
+            + 1000000 * self.pair_card
+            + 10000 * self.high_card
+            + 100 * self.middle_card
+            + self.low_card
+        )
 
 
 class TwoPairHand:
+    BASE_POINTS = 20000000000
+
     def __init__(self, hand: tuple[int, int, int]) -> None:
         self.low_pair_card: int = None
         self.high_pair_card: int = None
@@ -76,10 +95,17 @@ class TwoPairHand:
                 self.high_card = card
 
     def points(self) -> int:
-        ...
+        return (
+            self.BASE_POINTS
+            + 10000 * self.high_pair_card
+            + 100 * self.low_pair_card
+            + self.high_card
+        )
 
 
 class TripleHand:
+    BASE_POINTS = 30000000000
+
     def __init__(self, hand: tuple[int, int, int]) -> None:
         self.triple_card: int = None
         self.high_card: int = None
@@ -97,27 +123,36 @@ class TripleHand:
                     self.low_card = card
 
     def points(self) -> int:
-        ...
+        return (
+            self.BASE_POINTS
+            + 10000 * self.triple_card
+            + 100 * self.high_card
+            + self.low_card
+        )
 
 
 class FullHouseHand:
+    BASE_POINTS = 40000000000
+
     def __init__(self, hand: tuple[int, int, int]) -> None:
         self.triple_card: int = None
         self.pair_card: int = None
 
         for card in hand:
             if 3 == hand.count(card):
-                self.triple = card
+                self.triple_card = card
             elif 2 == hand.count(card):
                 self.pair_card = card
             if self.triple_card and self.pair_card:
                 break
 
     def points(self) -> int:
-        ...
+        return self.BASE_POINTS + 100 * self.triple_card + self.pair_card
 
 
 class PokerHand:
+    BASE_POINTS = 50000000000
+
     def __init__(self, hand: tuple[int, int, int]) -> None:
         self.poker_card: int = None
         self.high_card: int = None
@@ -127,19 +162,21 @@ class PokerHand:
                 self.poker = card
             elif 1 == hand.count(card):
                 self.high_card = card
-            if self.poker and self.high_card:
+            if self.poker_card and self.high_card:
                 break
 
     def points(self) -> int:
-        ...
+        return self.BASE_POINTS + 100 * self.poker + self.high_card
 
 
 class RePokerHand:
+    BASE_POINTS = 60000000000
+
     def __init__(self, hand: tuple[int, int, int]) -> None:
         self.reporker_card = hand[0]
 
     def points(self) -> int:
-        ...
+        return self.BASE_POINTS + self.reporker_card
 
 
 def convert_to_numerical_hand(hand: str) -> tuple[int, int, int, int, int]:
@@ -176,7 +213,7 @@ def find_hand_category(hand: Iterable) -> HandType:
         else:
             return HandType.TRIPLE
     elif 2 in counting:
-        if 2 == counting.count(2):
+        if 4 == counting.count(2):
             return HandType.TWOPAIR
         else:
             return HandType.PAIR

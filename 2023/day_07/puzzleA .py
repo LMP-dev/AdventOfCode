@@ -1,15 +1,8 @@
 # Standard library
 from pathlib import Path
 
-
 # Own modules
-from hand import (
-    Hand,
-    HandType,
-    convert_to_numerical_hand,
-    create_hand_object,
-    find_hand_category,
-)
+from hand import Hand, convert_to_numerical_hand, create_hand_object, find_hand_category
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -29,12 +22,20 @@ def parse_input(file_content: list[str]) -> list[tuple[Hand, int]]:
         hand_tuple = convert_to_numerical_hand(hand_str)
         hand_type = find_hand_category(hand_tuple)
         hand_object = create_hand_object(hand_tuple, hand_type)
-        hands.append((hand_object, bid))
+        hands.append((hand_object, int(bid)))
     return hands
 
 
 def solve_01(data: list[tuple[Hand, int]]) -> int:
-    return
+    total_winnings = 0
+
+    ranks = [(hand.points(), bid) for hand, bid in data]
+    ranks.sort()
+
+    for i, item in enumerate(ranks):
+        _, bid = item
+        total_winnings += (i + 1) * bid
+    return total_winnings
 
 
 def main() -> None:
