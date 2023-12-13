@@ -13,12 +13,38 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]):
-    return
+def parse_input(file_content: list[str]) -> list[list[int]]:
+    values_history = []
+    for content in file_content:
+        values = content.split(" ")
+        value_history = [int(val) for val in values]
+        values_history.append(value_history)
+    return values_history
 
 
-def solve_01(data) -> int:
+def find_extrapolation_data(history_val: list[int], last_val: list) -> list[int]:
+    """Last values of each row is stored in list last_val"""
+    diff_values = [y - x for x, y in zip(history_val[:-1], history_val[1:])]
+    last_val.append(history_val[-1])
+
+    all_same_value = diff_values.count(diff_values[0]) == len(diff_values)
+    if all_same_value and diff_values[0] == 0:
+        last_val.append(0)
+        return last_val
+    else:
+        return find_extrapolation_data(diff_values, last_val)
+
+
+def solve_01(data: list[list[int]]) -> int:
     values_histories = 0
+
+    for history in data:
+        extrapolation_data = find_extrapolation_data(history, [])
+        extrapolation_data.reverse()
+        prediction_value = 0
+        for value in extrapolation_data:
+            prediction_value += value
+        values_histories += prediction_value
 
     return values_histories
 
