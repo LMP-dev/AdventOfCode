@@ -1,7 +1,6 @@
 # Standard library
 import itertools
 import math
-from functools import reduce
 from pathlib import Path
 
 INPUT_FILE_PATH = Path(__file__).parent
@@ -69,7 +68,7 @@ def solve_01(data: tuple[str, dict[str, tuple[str, str]]]) -> int:
                 next_nodes.append(next_node)
         current_nodes = next_nodes
 
-    return reduce(math.lcm, path_steps)
+    return math.lcm(*path_steps)
 
 
 def main() -> None:
