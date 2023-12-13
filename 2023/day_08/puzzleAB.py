@@ -1,15 +1,10 @@
 # Standard library
-from pathlib import Path
 import itertools
-from typing import Iterable
-from functools import cache, partial
+import math
+from functools import reduce
+from pathlib import Path
 
 INPUT_FILE_PATH = Path(__file__).parent
-
-
-class HashableDict(dict):
-    def __hash__(self):
-        return hash(tuple(sorted(self.items())))
 
 
 def read_data(
@@ -22,7 +17,7 @@ def read_data(
 
 def parse_input(file_content: list[str]) -> tuple[str, dict[str, tuple[str, str]]]:
     instructions = file_content[0]
-    network = HashableDict()
+    network = {}
 
     for node_data in file_content[2:]:
         node = node_data[:3]
@@ -32,7 +27,7 @@ def parse_input(file_content: list[str]) -> tuple[str, dict[str, tuple[str, str]
     return instructions, network
 
 
-def find_nodes_ends_A(network: HashableDict) -> tuple[str]:
+def find_nodes_ends_A(network: dict[str, tuple[str, str]]) -> tuple[str]:
     start_paths = []
     for node in network.keys():
         if node[2] == "A":
@@ -40,43 +35,41 @@ def find_nodes_ends_A(network: HashableDict) -> tuple[str]:
     return tuple(start_paths)
 
 
-def is_final_destination(nodes: Iterable[str]) -> bool:
-    for node in nodes:
-        if node[2] != "Z":
-            return False
-    return True
-
-
-@cache
-def navigate_desert(network: HashableDict, current_node: str, direction: str) -> str:
+def navigate_desert(
+    network: dict[str, tuple[str, str]], current_node: str, direction: str
+) -> str:
+    """Use the network defined above to be able to cache the function"""
     if direction == "L":
-        node = network[current_node][0]
+        next_node = network[current_node][0]
     elif direction == "R":
-        node = network[current_node][0]
+        next_node = network[current_node][1]
     else:
         raise Exception(f"Unknownn instruction: {direction}")
-    return node
+    return next_node
 
 
-def solve_01(data: tuple[str, HashableDict]) -> int:
+def solve_01(data: tuple[str, dict[str, tuple[str, str]]]) -> int:
     steps = 0
+    path_steps = []
 
     instructions = itertools.cycle(data[0])
     network = data[1]
-    current_nodes = tuple(find_nodes_ends_A(network))
+    current_nodes = find_nodes_ends_A(network)
 
-    for next_path in instructions:
+    while len(current_nodes) > 0:
+        next_path = next(instructions)
         steps += 1
+
         next_nodes = []
         for node in current_nodes:
             next_node = navigate_desert(network, node, next_path)
-            next_nodes.append(next_node)
-        if is_final_destination(next_nodes):
-            break
-        else:
-            current_nodes = tuple(next_nodes)
+            if next_node[2] == "Z":
+                path_steps.append(steps)
+            else:
+                next_nodes.append(next_node)
+        current_nodes = next_nodes
 
-    return steps
+    return reduce(math.lcm, path_steps)
 
 
 def main() -> None:
