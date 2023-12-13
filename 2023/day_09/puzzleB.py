@@ -34,7 +34,7 @@ def find_extrapolation_data(history_val: list[int], first_val: list) -> list[int
         return find_extrapolation_data(diff_values, first_val)
 
 
-def solve_01(data: list[list[int]]) -> int:
+def solve_02(data: list[list[int]]) -> int:
     values_histories = 0
 
     for history in data:
@@ -52,11 +52,11 @@ def main() -> None:
     # input.txt | example_1.txt | example_1_v2.txt
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example 1 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the part 2 is {solution}")
 
 

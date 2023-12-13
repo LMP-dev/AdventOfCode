@@ -141,7 +141,7 @@ def parse_input(file_content: list[str]) -> tuple[list[list[str]], tuple[int, in
     return grid, start_position
 
 
-def solve_01(data: tuple[list[list[str]], tuple[int, int]]) -> int:
+def solve_02(data: tuple[list[list[str]], tuple[int, int]]) -> int:
     # Unpack data
     pipes_map, start_position = data
     row, col = start_position
@@ -186,23 +186,27 @@ def main() -> None:
     # input.txt | example_1.txt | example_1_v2.txt
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example 1 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "example_2.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example 2 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "example_3.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example 3 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "example_4.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example 4 is {solution}")
+    file_content = read_data(INPUT_FILE_PATH / "example_5.txt")
+    data = parse_input(file_content)
+    solution = solve_02(data)
+    print(f"The solution of the example 5 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the part 2 is {solution}")
 
 

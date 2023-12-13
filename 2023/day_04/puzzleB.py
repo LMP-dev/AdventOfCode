@@ -34,7 +34,7 @@ def parse_input(file_path: Path) -> list[tuple[tuple[int, ...], tuple[int, ...]]
     return scratch_cards
 
 
-def solve_01(data: list[tuple[tuple[int, ...], tuple[int, ...]]]) -> int:
+def solve_02(data: list[tuple[tuple[int, ...], tuple[int, ...]]]) -> int:
     # variables initialization
     scratch_cards_count = np.ones(len(data))  # stores nº of cards and copies
 
@@ -60,11 +60,11 @@ def find_matches(first_list: tuple[int], second_list: tuple[int]) -> int:
 def main() -> None:
     # input.txt | example_1.txt | example_2.txt
     data = parse_input(INPUT_FILE_PATH / "example_1.txt")
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example is {solution}")
     data = parse_input(INPUT_FILE_PATH / "input.txt")
-    solution = solve_01(data)  # 14427616
-    print(f"The solution of part 1 is {solution}")
+    solution = solve_02(data)  # 14427616
+    print(f"The solution of part 2 is {solution}")
 
 
 if __name__ == "__main__":

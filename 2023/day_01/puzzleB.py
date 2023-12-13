@@ -104,7 +104,7 @@ def solve_02(data: list[str]) -> int:
 def main() -> None:
     data = parse_input(INPUT_FILE)
     solution = solve_02(data)
-    print(solution)  # 54140 (too high)
+    print(f"The solution of part 2 is {solution}")  # 54140 (too high)
     # lines 3 (one less) and 7 wrong (one more)
 
 

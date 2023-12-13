@@ -75,7 +75,7 @@ def parse_input(file_path: Path) -> list[Game]:
     return games
 
 
-def solve_01(data: list[Game]) -> int:
+def solve_02(data: list[Game]) -> int:
     sum = 0
     for game in data:
         game_power = game.get_game_power()
@@ -85,8 +85,8 @@ def solve_01(data: list[Game]) -> int:
 
 def main() -> None:
     data = parse_input(INPUT_FILE)
-    solution = solve_01(data)
-    print(solution)
+    solution = solve_02(data)
+    print(f"The solution of part 2 is {solution}")
 
 
 if __name__ == "__main__":

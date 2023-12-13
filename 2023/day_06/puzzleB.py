@@ -25,7 +25,7 @@ def parse_input(file_content: list[str]) -> tuple[int, int]:
     return (int(time), int(distance))
 
 
-def solve_01(data: list[tuple[int, int]]) -> int:
+def solve_02(data: list[tuple[int, int]]) -> int:
     ways_to_win = 0
     time, max_dist = data
     for hold_time in range(time):
@@ -40,12 +40,12 @@ def main() -> None:
     # input.txt | example_1.txt
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
-    print(f"The solution of part 1 is {solution}")
+    solution = solve_02(data)
+    print(f"The solution of part 2 is {solution}")
 
 
 if __name__ == "__main__":

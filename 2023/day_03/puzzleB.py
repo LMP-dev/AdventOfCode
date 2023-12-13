@@ -10,7 +10,7 @@ def parse_input(file_path: Path) -> list[str]:
     return lines
 
 
-def solve_01(data: list[str]) -> int:
+def solve_02(data: list[str]) -> int:
     """
     lines are:
         - top
@@ -146,11 +146,11 @@ def is_num_in_horizontal_range(char_index: int, number_indexes: Iterator[int]) -
 def main() -> None:
     # input.txt | example_1.txt | example_2.txt
     data = parse_input(INPUT_FILE_PATH / "example_1.txt")
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example is {solution}")
     data = parse_input(INPUT_FILE_PATH / "input.txt")
-    solution = solve_01(data)
-    print(f"The solution of part 1 is {solution}")
+    solution = solve_02(data)
+    print(f"The solution of part 2 is {solution}")
 
 
 if __name__ == "__main__":

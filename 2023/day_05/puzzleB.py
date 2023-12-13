@@ -221,7 +221,7 @@ def parse_input(
     return seeds, location_finder
 
 
-def solve_01(data: list[int]) -> int:
+def solve_02(data: list[int]) -> int:
     seed_iterators, finder = data
     # variables initialization
     minimum_location = math.inf
@@ -236,11 +236,11 @@ def solve_01(data: list[int]) -> int:
 def main() -> None:
     # input.txt | example_1.txt
     data = parse_input(INPUT_FILE_PATH / "example_1.txt")
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example is {solution}")
     data = parse_input(INPUT_FILE_PATH / "input.txt")
-    solution = solve_01(data)  # 25004
-    print(f"The solution of part 1 is {solution}")
+    solution = solve_02(data)  # 25004
+    print(f"The solution of part 2 is {solution}")
 
 
 if __name__ == "__main__":

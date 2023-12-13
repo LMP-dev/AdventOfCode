@@ -47,7 +47,7 @@ def navigate_desert(
     return next_node
 
 
-def solve_01(data: tuple[str, dict[str, tuple[str, str]]]) -> int:
+def solve_02(data: tuple[str, dict[str, tuple[str, str]]]) -> int:
     steps = 0
     path_steps = []
 
@@ -75,19 +75,19 @@ def main() -> None:
     # input.txt | example_1.txt | example_1_v2.txt
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example 1 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "example_1_v2.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example 1 v2 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "example_2.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the example 2 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
+    solution = solve_02(data)
     print(f"The solution of the part 2 is {solution}")
 
 
