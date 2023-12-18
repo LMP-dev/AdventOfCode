@@ -145,9 +145,8 @@ def solve_02(data: tuple[list[list[str]], tuple[int, int]]) -> int:
     # Unpack data
     pipes_map, start_position = data
     row, col = start_position
-    visited_positions = set([start_position])
-
-    step = 0
+    # Initialize variables
+    visited_positions: list[tuple[int, int]] = [start_position]
     animal_positions = [
         AnimalPosition(row, col, to_direction=Direction.NORD),
         AnimalPosition(row, col, to_direction=Direction.EAST),
@@ -155,31 +154,59 @@ def solve_02(data: tuple[list[list[str]], tuple[int, int]]) -> int:
         AnimalPosition(row, col, to_direction=Direction.WEST),
     ]
     looking = True
+    # Initialize variables for reconstructing graph
+    from_neighbour: list[tuple[int, int]] = [
+        None
+    ]  # paralel list to visited_positions with coming position of that node
+    final_neighbour: tuple[int, int] = None
+    final_position: tuple[int, int] = None
+
     while looking:
-        step += 1
-        new_animal_positions = []
+        new_animal_positions: list[AnimalPosition] = []
         for animal_position in animal_positions:
             new_animal_position = animal_position.next_position(
                 pipes_map
             )  # may return None if invalid movement
+            from_position = (animal_position.row, animal_position.col)
             if not new_animal_position:
                 continue
             new_position = (new_animal_position.row, new_animal_position.col)
             if new_position in visited_positions:
                 # found farthest position
                 looking = False
+                final_position = new_position
+                final_neighbour = from_position
                 break
             else:
-                # Check if arrived from another path to same position
-                if new_position in new_animal_positions:
-                    looking = False
-                    break
-                else:
-                    visited_positions.add(new_position)
-                    new_animal_positions.append(new_animal_position)
+                visited_positions.append(new_position)
+                from_neighbour.append(from_position)
+                new_animal_positions.append(new_animal_position)
         animal_positions = new_animal_positions
 
-    return step
+    # Create graph of the path
+    i = visited_positions.index(final_position)
+    final_other_neighbour = from_position[i]
+
+    graph = {
+        final_position: [final_neighbour, final_other_neighbour],
+        final_neighbour: [final_position],
+        final_other_neighbour: [final_position],
+    }
+    to_be_visited = [final_neighbour, final_other_neighbour]
+    while to_be_visited:
+        node = to_be_visited.pop()
+        i = visited_positions.index(final_position)
+        neighbour_node = from_position[i]
+
+        if node in graph.keys():
+            if neighbour_node:
+                graph[node].append(neighbour_node)
+        else:
+            graph.update({node: [neighbour_node]})
+        if neighbour_node:
+            to_be_visited.append(neighbour_node)
+
+    return
 
 
 def main() -> None:

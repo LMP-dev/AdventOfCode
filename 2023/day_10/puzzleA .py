@@ -170,13 +170,8 @@ def solve_01(data: tuple[list[list[str]], tuple[int, int]]) -> int:
                 looking = False
                 break
             else:
-                # Check if arrived from another path to same position
-                if new_position in new_animal_positions:
-                    looking = False
-                    break
-                else:
-                    visited_positions.add(new_position)
-                    new_animal_positions.append(new_animal_position)
+                visited_positions.add(new_position)
+                new_animal_positions.append(new_animal_position)
         animal_positions = new_animal_positions
 
     return step
