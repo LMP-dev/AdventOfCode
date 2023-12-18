@@ -185,7 +185,7 @@ def solve_02(data: tuple[list[list[str]], tuple[int, int]]) -> int:
 
     # Create graph of the path
     i = visited_positions.index(final_position)
-    final_other_neighbour = from_position[i]
+    final_other_neighbour = from_neighbour[i]
 
     graph = {
         final_position: [final_neighbour, final_other_neighbour],
@@ -195,8 +195,8 @@ def solve_02(data: tuple[list[list[str]], tuple[int, int]]) -> int:
     to_be_visited = [final_neighbour, final_other_neighbour]
     while to_be_visited:
         node = to_be_visited.pop()
-        i = visited_positions.index(final_position)
-        neighbour_node = from_position[i]
+        i = visited_positions.index(node)
+        neighbour_node = from_neighbour[i]
 
         if node in graph.keys():
             if neighbour_node:
@@ -204,9 +204,16 @@ def solve_02(data: tuple[list[list[str]], tuple[int, int]]) -> int:
         else:
             graph.update({node: [neighbour_node]})
         if neighbour_node:
+            if neighbour_node in graph.keys():
+                graph[neighbour_node].append(node)
+            else:
+                graph.update({neighbour_node: [node]})
+
             to_be_visited.append(neighbour_node)
 
-    return
+    # Find enclosed cells in the loop
+
+    return graph
 
 
 def main() -> None:
@@ -219,22 +226,22 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_02(data)
     print(f"The solution of the example 2 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "example_3.txt")
-    data = parse_input(file_content)
-    solution = solve_02(data)
-    print(f"The solution of the example 3 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "example_4.txt")
-    data = parse_input(file_content)
-    solution = solve_02(data)
-    print(f"The solution of the example 4 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "example_5.txt")
-    data = parse_input(file_content)
-    solution = solve_02(data)
-    print(f"The solution of the example 5 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    data = parse_input(file_content)
-    solution = solve_02(data)
-    print(f"The solution of the part 2 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "example_3.txt")
+    # data = parse_input(file_content)
+    # solution = solve_02(data)
+    # print(f"The solution of the example 3 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "example_4.txt")
+    # data = parse_input(file_content)
+    # solution = solve_02(data)
+    # print(f"The solution of the example 4 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "example_5.txt")
+    # data = parse_input(file_content)
+    # solution = solve_02(data)
+    # print(f"The solution of the example 5 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    # data = parse_input(file_content)
+    # solution = solve_02(data)
+    # print(f"The solution of the part 2 is {solution}")
 
 
 if __name__ == "__main__":
