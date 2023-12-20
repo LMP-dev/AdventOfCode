@@ -47,7 +47,7 @@ def expand_galaxy_coordinates(
     rows_to_expand: list[int],
     columns_to_expand: list[int],
 ) -> list[tuple[int, int]]:
-    EXPANSION = 1
+    EXPANSION = 100
     new_galaxies_coordinates = []
     for galaxy in galaxies_coordinates:
         r, c = galaxy
