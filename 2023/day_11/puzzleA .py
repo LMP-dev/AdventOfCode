@@ -15,11 +15,16 @@ def read_data(
 def parse_input(file_content: list[str]):
     grid = []
 
+    # parse & expand
+
     return grid
 
 
 def solve_01(data: tuple[list[list[str]], tuple[int, int]]) -> int:
     step = 0
+    # create all pairs
+
+    # find distances by coordinates
 
     return step
 
