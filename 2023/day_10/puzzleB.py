@@ -163,17 +163,45 @@ def find_enclosed_positions(
     graph: dict[tuple[int, int], list[tuple[int, int]]],
     initial_pos: tuple[int, int],
     final_pos: tuple[int, int],
+    grid: list[list[str]],
 ) -> int:
     """Assumes that inital_pos[0] == final_pos[0] -> Same row in grid"""
+    turns_map = {"L": "J", "F": "7"}
+
     row = initial_pos[0]
     column = initial_pos[1]
+    current_tile = grid[row][column]
     enclosed = 0
     is_inside = False
+    if current_tile in turns_map.keys():
+        last_turn_tile = current_tile
+        is_on_line = True
+    else:
+        last_turn_tile = None
+        is_on_line = False
 
     while column != final_pos[1]:
         try:
-            if not (row, column + 1) in graph[(row, column)]:
-                is_inside = not is_inside
+            neighbours = graph[(row, column)]  # this may fail if not on graph tile
+            next_position = (row, column + 1)
+            current_tile = grid[row][column]
+            if not next_position in neighbours:
+                # Special case on_line
+                if is_on_line:
+                    if not current_tile == turns_map[last_turn_tile]:
+                        is_inside = not is_inside
+                    is_on_line = False
+                    last_turn_tile = None
+                else:
+                    is_inside = not is_inside
+                    is_on_line = False
+                    last_turn_tile = None
+            # moving to neighbour node
+            else:
+                if not last_turn_tile:
+                    if current_tile in turns_map.keys():
+                        last_turn_tile = current_tile
+                        is_on_line = True
         except KeyError:
             # Moving through inside or outside of the loop
             if is_inside:
@@ -257,7 +285,7 @@ def solve_02(data: tuple[list[list[str]], tuple[int, int]]) -> int:
     graph_grid = create_grid_graph_nodes(graph.keys())
     enclosed_tiles = 0
     for line in graph_grid:
-        enclosed = find_enclosed_positions(graph, line[0], line[-1])
+        enclosed = find_enclosed_positions(graph, line[0], line[-1], pipes_map)
         enclosed_tiles += enclosed
 
     return enclosed_tiles
