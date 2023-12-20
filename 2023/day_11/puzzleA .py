@@ -12,12 +12,19 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]):
-    grid = []
+def parse_input(file_content: list[str]) -> list[list[str]]:
+    grid: list[list[str]] = []
+    for line in file_content:
+        # Parse lines and add extra expanded rows when all "."
+        row = list(line)
+        if row.count(".") == len(row):
+            grid.append(row)
+        grid.append(row)
 
-    # parse & expand
+    # Expand columns
+    ...
 
-    return grid
+    return
 
 
 def solve_01(data: tuple[list[list[str]], tuple[int, int]]) -> int:
@@ -35,10 +42,6 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example 1 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "example_2.txt")
-    data = parse_input(file_content)
-    solution = solve_01(data)
-    print(f"The solution of the example 2 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve_01(data)
