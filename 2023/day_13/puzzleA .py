@@ -41,11 +41,12 @@ def check_symmetry_between_rows(
     difference = end_row - start_row
     lower_row = start_row + math.floor(difference / 2)
 
-    return lower_row
+    return lower_row + 1  # WHY THE +1!!!
 
 
 def find_row_symmetry(pattern: list[list[str]]) -> int | None:
     sym_row = None
+    max_index = len(pattern) - 1
     # Check horizontal symmetry
     for line in pattern:
         if sym_row:
@@ -55,7 +56,6 @@ def find_row_symmetry(pattern: list[list[str]]) -> int | None:
             continue
         else:
             indices = [i for i, val in enumerate(pattern) if val == line]
-            max_index = len(line) - 1
             # Not in one of the edges of the pattern
             if not (0 in indices or max_index in indices):
                 continue
@@ -69,7 +69,7 @@ def find_row_symmetry(pattern: list[list[str]]) -> int | None:
             # Last match is in edge of pattern
             if indices[-1] == max_index:
                 for index in indices[:-1]:
-                    row = check_symmetry_between_rows(0, index, pattern)
+                    row = check_symmetry_between_rows(index, max_index, pattern)
                     if row:
                         sym_row = row
                         break
@@ -103,10 +103,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example 1 is {solution}")
-    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    # data = parse_input(file_content)
-    # solution = solve_01(data)
-    # print(f"The solution of the part 1 is {solution}")
+    file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    data = parse_input(file_content)
+    solution = solve_01(data)
+    print(f"The solution of the part 1 is {solution}")
 
 
 if __name__ == "__main__":
