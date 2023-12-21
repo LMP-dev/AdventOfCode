@@ -75,7 +75,7 @@ def solve_01(data: list[list[str]]) -> int:
 
 
 def main() -> None:
-    # input.txt | example_1.txt | example_1_v2.txt
+    # input.txt | example_1.txt
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
     solution = solve_01(data)
