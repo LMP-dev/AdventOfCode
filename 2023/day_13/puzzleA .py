@@ -25,32 +25,43 @@ def parse_input(file_content: list[str]) -> list[list[list[str]]]:
     return patterns
 
 
-def check_symmetry_between_elements(
-    start_line, end_line, pattern: list[list[str]]
-) -> tuple[bool, int]:
+def check_symmetry_between_rows(
+    start_row: int, end_row: int, pattern: list[list[str]]
+) -> int | None:
     return
 
 
 def find_row_symmetry(pattern: list[list[str]]) -> int | None:
-    row = None
+    sym_row = None
     # Check horizontal symmetry
     for line in pattern:
+        if sym_row:
+            break
         count = pattern.count(line)
         if count == 1:
             continue
         else:
             indices = [i for i, val in enumerate(pattern) if val == line]
-            if count == 2:
-                is_sym, row_sym = check_symmetry_between_elements(
-                    indices[0], indices[1], pattern
-                )
-                if is_sym:
-                    row == row_sym
-                    break
-            else:
-                # Should consider case for par and odd
-                ...
-    return row
+            max_index = len(line) - 1
+            # Not in one of the edges of the pattern
+            if not (0 in indices or max_index in indices):
+                continue
+            # First match is in edge of pattern
+            if indices[0] == 0:
+                for index in indices[1:]:
+                    row = check_symmetry_between_rows(0, index, pattern)
+                    if row:
+                        sym_row = row
+                        break
+            # Last match is in edge of pattern
+            if indices[-1] == max_index:
+                for index in indices[:-1]:
+                    row = check_symmetry_between_rows(0, index, pattern)
+                    if row:
+                        sym_row = row
+                        break
+
+    return sym_row
 
 
 def solve_01(data: list[list[list[str]]]) -> int:
@@ -65,7 +76,9 @@ def solve_01(data: list[list[list[str]]]) -> int:
             col_pattern = list(zip(*pattern))
             col_symmetry = find_row_symmetry(col_pattern)
             if not col_symmetry:
-                raise Exception(f"No symmetry found in the pattern:\n{pattern}")
+                raise Exception(
+                    f"No horizontal and vertical symmetries found in the pattern:\n{pattern}"
+                )
             pattern_notes += col_symmetry
 
     return pattern_notes
