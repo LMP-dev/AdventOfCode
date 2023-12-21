@@ -56,10 +56,12 @@ def find_row_symmetry(pattern: list[list[str]]) -> int | None:
 def solve_01(data: list[list[list[str]]]) -> int:
     pattern_notes = 0
     for pattern in data:
+        # Search for horizontal symmetry
         row_symmetry = find_row_symmetry(pattern)
         if row_symmetry:
             pattern_notes += 100 * row_symmetry
         else:
+            # Search for vertical symmetry
             col_pattern = list(zip(*pattern))
             col_symmetry = find_row_symmetry(col_pattern)
             if not col_symmetry:
