@@ -1,5 +1,6 @@
 # Standard library
 from pathlib import Path
+import math
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -32,8 +33,15 @@ def check_symmetry_between_rows(
     if len(mirror_area) % 2 != 0:
         return None
     # for loop poping first and last elements and checking they are equal!
+    while mirror_area:
+        last_row = mirror_area.pop()
+        first_row = mirror_area.pop(0)
+        if first_row != last_row:
+            return None
+    difference = end_row - start_row
+    lower_row = start_row + math.floor(difference / 2)
 
-    return
+    return lower_row
 
 
 def find_row_symmetry(pattern: list[list[str]]) -> int | None:
@@ -95,7 +103,6 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example 1 is {solution}")
-    """"""
     # file_content = read_data(INPUT_FILE_PATH / "input.txt")
     # data = parse_input(file_content)
     # solution = solve_01(data)
