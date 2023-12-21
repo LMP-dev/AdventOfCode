@@ -28,6 +28,11 @@ def parse_input(file_content: list[str]) -> list[list[list[str]]]:
 def check_symmetry_between_rows(
     start_row: int, end_row: int, pattern: list[list[str]]
 ) -> int | None:
+    mirror_area = pattern[start_row : end_row + 1]
+    if len(mirror_area) % 2 != 0:
+        return None
+    # for loop poping first and last elements and checking they are equal!
+
     return
 
 
