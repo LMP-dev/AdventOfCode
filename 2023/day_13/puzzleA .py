@@ -32,7 +32,6 @@ def check_symmetry_between_rows(
     mirror_area = pattern[start_row : end_row + 1]
     if len(mirror_area) % 2 != 0:
         return None
-    # for loop poping first and last elements and checking they are equal!
     while mirror_area:
         last_row = mirror_area.pop()
         first_row = mirror_area.pop(0)
@@ -41,7 +40,7 @@ def check_symmetry_between_rows(
     difference = end_row - start_row
     lower_row = start_row + math.floor(difference / 2)
 
-    return lower_row
+    return lower_row + 1  # Problem rows start at 1 not at 0
 
 
 def find_row_symmetry(pattern: list[list[str]]) -> int | None:
@@ -74,7 +73,7 @@ def find_row_symmetry(pattern: list[list[str]]) -> int | None:
                         sym_row = row
                         break
 
-    return sym_row + 1  # Problem rows start at 1 not at 0
+    return sym_row
 
 
 def solve_01(data: list[list[list[str]]]) -> int:
