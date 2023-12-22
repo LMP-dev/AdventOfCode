@@ -77,10 +77,10 @@ def find_row_symmetry(pattern: list[list[str]]) -> int | None:
     return sym_row
 
 
-def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[str]]:
+def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[str]] | None:
     def only_one_difference(row_1: list[str], row_2: list[str]) -> int | None:
         difference = []
-        for i, x, y in enumerate(zip(row_1, row_2)):
+        for i, (x, y) in enumerate(zip(row_1, row_2)):
             if x != y:
                 difference.append(i)
         if len(difference) == 1:
@@ -98,15 +98,18 @@ def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[str]]:
         row = temp_pattern.pop(0)
         for other_row in temp_pattern:
             index_smudge = only_one_difference(row, other_row)
-            if index_smudge:
+            if index_smudge is not None:
                 break
+        if index_smudge is not None:
+            break
         row_index += 1
     
     # Fix the smudge
-    new_pattern = pattern.copy()
-    fix_smudge(new_pattern[row_index], index_smudge)
-    
-    return new_pattern
+    if index_smudge is not None:
+        new_pattern = pattern.copy()
+        fix_smudge(new_pattern[row_index], index_smudge)
+        return new_pattern
+    return None
 
 
 def solve_02(data: list[list[list[str]]]) -> int:
@@ -128,6 +131,13 @@ def solve_02(data: list[list[list[str]]]) -> int:
 
         # Fix smudge on the mirror
         new_pattern = fix_smudge_pattern(pattern)
+        if new_pattern:
+            # Look rows and then columns
+            ...
+        else:
+            # fix_smudge for columns and look columns and rows
+            ...
+        
         print(f"Pattern with fixed smudge is:\n{new_pattern}")
 
     return pattern_notes
@@ -139,10 +149,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_02(data)
     print(f"The solution of the example 1 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    data = parse_input(file_content)
-    solution = solve_02(data)
-    print(f"The solution of the part 1 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    # data = parse_input(file_content)
+    # solution = solve_02(data)
+    # print(f"The solution of the part 1 is {solution}")
 
 
 if __name__ == "__main__":
