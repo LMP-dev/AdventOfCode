@@ -41,7 +41,7 @@ def check_symmetry_between_rows(
     difference = end_row - start_row
     lower_row = start_row + math.floor(difference / 2)
 
-    return lower_row
+    return lower_row + 1  # Problem rows start at 1 not at 0
 
 
 def find_row_symmetry(pattern: list[list[str]]) -> int | None:
@@ -74,7 +74,7 @@ def find_row_symmetry(pattern: list[list[str]]) -> int | None:
                         sym_row = row
                         break
 
-    return sym_row + 1  # Problem rows start at 1 not at 0
+    return sym_row
 
 
 def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[str]]:
@@ -85,11 +85,28 @@ def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[str]]:
                 difference.append(i)
         if len(difference) == 1:
             return difference[0]
+    
+    def fix_smudge(row: list[str], index: int) -> None:
+        '''Modifies the same list it recives'''
+        fixer = {".": "#", "#":"."}
+        row[index] = fixer[row[index]]
 
+    # Find position of the smudge to fix
     temp_pattern = pattern.copy()
+    row_index = 0
     while temp_pattern:
-        line = temp_pattern.pop(0)
-    ...
+        row = temp_pattern.pop(0)
+        for other_row in temp_pattern:
+            index_smudge = only_one_difference(row, other_row)
+            if index_smudge:
+                break
+        row_index += 1
+    
+    # Fix the smudge
+    new_pattern = pattern.copy()
+    fix_smudge(new_pattern[row_index], index_smudge)
+    
+    return new_pattern
 
 
 def solve_02(data: list[list[list[str]]]) -> int:
@@ -111,6 +128,7 @@ def solve_02(data: list[list[list[str]]]) -> int:
 
         # Fix smudge on the mirror
         new_pattern = fix_smudge_pattern(pattern)
+        print(f"Pattern with fixed smudge is:\n{new_pattern}")
 
     return pattern_notes
 
