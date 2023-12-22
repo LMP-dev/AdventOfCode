@@ -111,14 +111,11 @@ def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[str]] | None:
         return new_pattern
     return None
 
-
-def solve_02(data: list[list[list[str]]]) -> int:
-    pattern_notes = 0
-    for pattern in data:
-        # Search for horizontal symmetry
+def find_pattern_symmetry(pattern: list[list[str]]) -> int:
+    # Search for horizontal symmetry
         row_symmetry = find_row_symmetry(pattern)
         if row_symmetry:
-            pattern_notes += 100 * row_symmetry
+            return 100 * row_symmetry
         else:
             # Search for vertical symmetry
             col_pattern = list(zip(*pattern))
@@ -127,20 +124,29 @@ def solve_02(data: list[list[list[str]]]) -> int:
                 raise Exception(
                     f"No horizontal and vertical symmetries found in the pattern:\n{pattern}"
                 )
-            pattern_notes += col_symmetry
+            return col_symmetry
+
+def solve_02(data: list[list[list[str]]]) -> int:
+    pattern_notes = 0
+    for pattern in data:
+        # Search for horizontal symmetry
+        note = find_pattern_symmetry(pattern)
+        pattern_notes += note
+    
+    return pattern_notes
 
         # Fix smudge on the mirror
-        new_pattern = fix_smudge_pattern(pattern)
-        if new_pattern:
-            # Look rows and then columns
-            ...
-        else:
-            # fix_smudge for columns and look columns and rows
-            ...
+    #     new_pattern = fix_smudge_pattern(pattern)
+    #     if new_pattern:
+    #         # Look rows and then columns
+    #         ...
+    #     else:
+    #         # fix_smudge for columns and look columns and rows
+    #         ...
         
-        print(f"Pattern with fixed smudge is:\n{new_pattern}")
+    #     print(f"Pattern with fixed smudge is:\n{new_pattern}")
 
-    return pattern_notes
+    # return pattern_notes
 
 
 def main() -> None:
@@ -149,10 +155,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_02(data)
     print(f"The solution of the example 1 is {solution}")
-    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    # data = parse_input(file_content)
-    # solution = solve_02(data)
-    # print(f"The solution of the part 1 is {solution}")
+    file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    data = parse_input(file_content)
+    solution = solve_02(data)
+    print(f"The solution of the part 1 is {solution}")
 
 
 if __name__ == "__main__":
