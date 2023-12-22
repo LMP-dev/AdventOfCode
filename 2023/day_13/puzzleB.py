@@ -150,7 +150,7 @@ def solve_02(data: list[list[list[str]]]) -> int:
                     if not new_pattern:
                         continue
                     new_pattern_by_rows =list(zip(*new_pattern))
-                    new_note = find_pattern_symmetry(new_pattern_by_rows, note)
+                    new_note = find_pattern_symmetry(new_pattern_by_rows)
             else:
                 # Fix_smudge for columns and look columns and rows
                 col_pattern = list(zip(*pattern))
