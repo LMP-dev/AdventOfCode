@@ -44,7 +44,7 @@ def check_symmetry_between_rows(
     return lower_row + 1  # Problem rows start at 1 not at 0
 
 
-def find_row_symmetry(pattern: list[list[str]]) -> int | None:
+def find_row_symmetry(pattern: list[list[str]], old_symmetry: int = None) -> int | None:
     sym_row = None
     max_index = len(pattern) - 1
     # Check horizontal symmetry
@@ -64,20 +64,39 @@ def find_row_symmetry(pattern: list[list[str]]) -> int | None:
                 for index in indices[1:]:
                     row = check_symmetry_between_rows(0, index, pattern)
                     if row:
-                        sym_row = row
-                        break
+                        if not row == old_symmetry:
+                            sym_row = row
+                            break
             # Last match is in edge of pattern
             if indices[-1] == max_index:
                 for index in indices[:-1]:
                     row = check_symmetry_between_rows(index, max_index, pattern)
                     if row:
-                        sym_row = row
-                        break
+                        if not row == old_symmetry:
+                            sym_row = row
+                            break
 
     return sym_row
 
+def find_pattern_symmetry(pattern: list[list[str]], old_symmetry:int = None) -> int:
+    # Search for horizontal symmetry
+    if old_symmetry is not None:
+        row_symmetry = find_row_symmetry(pattern, old_symmetry/100)
+    else:
+        row_symmetry = find_row_symmetry(pattern)
+    if row_symmetry:
+        return 100 * row_symmetry
+    else:
+        # Search for vertical symmetry
+        col_pattern = list(zip(*pattern))
+        col_symmetry = find_row_symmetry(col_pattern, old_symmetry)
+        # if not col_symmetry:
+        #     raise Exception(
+        #         f"No horizontal and vertical symmetries found in the pattern:\n{pattern}"
+        #     )
+        return col_symmetry
 
-def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[str]] | None:
+def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[list[str]]]:
     def only_one_difference(row_1: list[str], row_2: list[str]) -> int | None:
         difference = []
         for i, (x, y) in enumerate(zip(row_1, row_2)):
@@ -94,59 +113,58 @@ def fix_smudge_pattern(pattern: list[list[str]]) -> list[list[str]] | None:
     # Find position of the smudge to fix
     temp_pattern = pattern.copy()
     row_index = 0
+    fixes_possible = []
     while temp_pattern:
         row = temp_pattern.pop(0)
         for other_row in temp_pattern:
             index_smudge = only_one_difference(row, other_row)
             if index_smudge is not None:
+                fixes_possible.append((row_index, index_smudge))
                 break
-        if index_smudge is not None:
-            break
         row_index += 1
     
     # Fix the smudge
-    if index_smudge is not None:
+    fixed_patterns = [] 
+    for fix in fixes_possible:
+        row_index, index_smudge = fix
         new_pattern = pattern.copy()
         fix_smudge(new_pattern[row_index], index_smudge)
-        return new_pattern
-    return None
-
-def find_pattern_symmetry(pattern: list[list[str]]) -> int:
-    # Search for horizontal symmetry
-        row_symmetry = find_row_symmetry(pattern)
-        if row_symmetry:
-            return 100 * row_symmetry
-        else:
-            # Search for vertical symmetry
-            col_pattern = list(zip(*pattern))
-            col_symmetry = find_row_symmetry(col_pattern)
-            if not col_symmetry:
-                raise Exception(
-                    f"No horizontal and vertical symmetries found in the pattern:\n{pattern}"
-                )
-            return col_symmetry
+        fixed_patterns.append(new_pattern)
+    
+    return fixed_patterns
 
 def solve_02(data: list[list[list[str]]]) -> int:
     pattern_notes = 0
-    for pattern in data:
-        # Search for horizontal symmetry
+    for x,pattern in enumerate(data):
         note = find_pattern_symmetry(pattern)
-        pattern_notes += note
-    
-    return pattern_notes
 
         # Fix smudge on the mirror
-    #     new_pattern = fix_smudge_pattern(pattern)
-    #     if new_pattern:
-    #         # Look rows and then columns
-    #         ...
-    #     else:
-    #         # fix_smudge for columns and look columns and rows
-    #         ...
-        
-    #     print(f"Pattern with fixed smudge is:\n{new_pattern}")
-
-    # return pattern_notes
+        new_patterns = fix_smudge_pattern(pattern)
+        for new_pattern in new_patterns:
+            if new_pattern:
+                new_note = find_pattern_symmetry(new_pattern, note)
+                if new_note is None:
+                    col_pattern = list(zip(*pattern))
+                    col_pattern = [list(line) for line in col_pattern]
+                    new_pattern = fix_smudge_pattern(col_pattern)
+                    if not new_pattern:
+                        continue
+                    new_pattern_by_rows =list(zip(*new_pattern))
+                    new_note = find_pattern_symmetry(new_pattern_by_rows, note)
+            else:
+                # Fix_smudge for columns and look columns and rows
+                col_pattern = list(zip(*pattern))
+                col_pattern = [list(line) for line in col_pattern]
+                new_pattern = fix_smudge_pattern(col_pattern)
+                if not new_pattern:
+                    raise Exception(f"No smudge found by rows or by columns in pattern at position {x}:\n{pattern}\nThe parttern in position {x} is:\n{data[x]}")
+                new_pattern_by_rows =list(zip(*new_pattern))
+                new_note = find_pattern_symmetry(new_pattern_by_rows, note)
+            if new_note is not None:
+                pattern_notes += new_note
+                break
+    
+    return pattern_notes
 
 
 def main() -> None:
