@@ -48,30 +48,65 @@ def spin_cycle(reflector: rock_platform.Platform, max_row: int, max_col: int) ->
     # North tilt
     reflector_state = reflector.organize_rocks_by_column()
     new_round_rocks = []
-    for rocks in reflector_state.values():
+    for col, rocks in reflector_state.items():
         new_rocks = operations.tilt_platform(
             rocks[Shape.ROUND], rocks[Shape.CUBE], max_col
         )
-        new_round_rocks.extend(new_rocks)
+        new_rocks_coords = [(row, col) for row in new_rocks]
+        new_round_rocks.extend(new_rocks_coords)
+    reflector.update_round_rocks(new_round_rocks)
+
+    # West tilt
+    reflector_state = reflector.organize_rocks_by_row()
+    new_round_rocks = []
+    for row, rocks in reflector_state.items():
+        new_rocks = operations.tilt_platform(
+            rocks[Shape.ROUND], rocks[Shape.CUBE], max_row
+        )
+        new_rocks_coords = [(row, col) for col in new_rocks]
+        new_round_rocks.extend(new_rocks_coords)
+    reflector.update_round_rocks(new_round_rocks)
+
+    # South tilt
+    reflector_state = reflector.organize_rocks_by_column()
+    new_round_rocks = []
+    for col, rocks in reflector_state.items():
+        new_rocks = operations.tilt_platform(
+            rocks[Shape.ROUND], rocks[Shape.CUBE], max_col, inverse_order=True
+        )
+        new_rocks_coords = [(row, col) for row in new_rocks]
+        new_round_rocks.extend(new_rocks_coords)
+    reflector.update_round_rocks(new_round_rocks)
+
+    # East tilt
+    reflector_state = reflector.organize_rocks_by_row()
+    new_round_rocks = []
+    for row, rocks in reflector_state.items():
+        new_rocks = operations.tilt_platform(
+            rocks[Shape.ROUND], rocks[Shape.CUBE], max_row, inverse_order=True
+        )
+        new_rocks_coords = [(row, col) for col in new_rocks]
+        new_round_rocks.extend(new_rocks_coords)
+    reflector.update_round_rocks(new_round_rocks)
 
 
 def solve_01(data) -> int:
     round_rocks, cube_rocks, max_r, max_c = data
     reflector = rock_platform.Platform(round_rocks, cube_rocks, max_r, max_c)
 
-    # Problem A check
-    reflector_state = reflector.organize_rocks_by_column()
+    spin_cycle(reflector, max_r, max_c)
 
-    new_round_rocks = []
-    for rocks in reflector_state.values():
-        new_rocks = operations.tilt_platform(
-            rocks[Shape.ROUND], rocks[Shape.CUBE], max_c
-        )
-        new_round_rocks.extend(new_rocks)
+    print(reflector.organize_rocks_by_column())
 
-    total_load = count_column_load(new_round_rocks, max_r)
+    spin_cycle(reflector, max_r, max_c)
 
-    return total_load
+    print(reflector.organize_rocks_by_column())
+
+    spin_cycle(reflector, max_r, max_c)
+
+    print(reflector.organize_rocks_by_column())
+
+    return 0
 
 
 def main() -> None:
@@ -80,10 +115,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example 1 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    data = parse_input(file_content)
-    solution = solve_01(data)
-    print(f"The solution of the part 1 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    # data = parse_input(file_content)
+    # solution = solve_01(data)
+    # print(f"The solution of the part 1 is {solution}")
 
 
 if __name__ == "__main__":
