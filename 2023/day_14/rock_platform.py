@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 
-import operations
 
 coord = tuple[int, int]
 
@@ -11,21 +10,6 @@ class Shape(Enum):
     CUBE = auto()
 
 
-class Orientation(Enum):
-    ROWS = auto()
-    COLUMNS = auto()
-
-
-@dataclass
-class PlatformByLines:
-    orientation: Orientation
-    schema: dict[int, dict[str, list[int]]]
-
-    def __post__init__(self) -> None:
-        # Ensure the lists in schema are ordered in ascending order!
-        ...
-
-
 @dataclass
 class Platform:
     round_rocks: list[coord]
@@ -33,7 +17,7 @@ class Platform:
     max_row: int
     max_col: int
 
-    def organize_rocks_by_column(self) -> PlatformByLines:
+    def organize_rocks_by_column(self) -> dict[int, dict[str, list[int]]]:
         platform = {}
         for col in range(self.max_col + 1):
             platform.update({col: {Shape.ROUND: [], Shape.CUBE: []}})
@@ -43,9 +27,9 @@ class Platform:
         for rock in self.cube_rocks:
             r, c = rock
             platform[c][Shape.CUBE].append(r)
-        return PlatformByLines(Orientation.COLUMNS, platform)
+        return platform
 
-    def organize_rocks_by_row(self) -> PlatformByLines:
+    def organize_rocks_by_row(self) -> dict[int, dict[str, list[int]]]:
         platform = {}
         for row in range(self.max_row + 1):
             platform.update({row: {Shape.ROUND: [], Shape.CUBE: []}})
@@ -55,7 +39,7 @@ class Platform:
         for rock in self.cube_rocks:
             r, c = rock
             platform[r][Shape.CUBE].append(c)
-        return PlatformByLines(Orientation.ROWS, platform)
+        return platform
 
     def update_round_rocks(self, new_round_rocks: list[coord]) -> None:
         self.round_rocks = new_round_rocks

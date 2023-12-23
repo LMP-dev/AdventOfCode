@@ -38,3 +38,21 @@ def reorder_section_values(
             new_values.append(occupied_pos)
 
     return new_values
+
+
+def tilt_platform(
+    round_rocks: list[int],
+    cube_rocks: list[int],
+    max_position: int,
+    inverse_order: bool = False,
+) -> list[int]:
+    new_round_rocks = []
+    sections = create_sections(cube_rocks, max_position)
+    filled_sections = classify_between_sections(sections, round_rocks)
+    for section, rock_coords in filled_sections.items():
+        new_rock_coords = reorder_section_values(
+            section, rock_coords, inverse=inverse_order
+        )
+        new_round_rocks.extend(new_rock_coords)
+
+    return new_round_rocks
