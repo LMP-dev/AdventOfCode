@@ -43,3 +43,6 @@ class Platform:
 
     def update_round_rocks(self, new_round_rocks: list[coord]) -> None:
         self.round_rocks = new_round_rocks
+
+    def get_rock_rows(self) -> list[int]:
+        return [r for (r, c) in self.round_rocks]
