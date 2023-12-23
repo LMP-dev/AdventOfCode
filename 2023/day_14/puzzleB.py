@@ -43,9 +43,19 @@ def count_column_load(rocks_rows_in_column: list[int], max_row: int) -> int:
     return load
 
 
-def solve_01(data) -> int:
-    total_load = 0
+def spin_cycle(reflector: rock_platform.Platform, max_row: int, max_col: int) -> None:
+    """Tilt North - West - South - East"""
+    # North tilt
+    reflector_state = reflector.organize_rocks_by_column()
+    new_round_rocks = []
+    for rocks in reflector_state.values():
+        new_rocks = operations.tilt_platform(
+            rocks[Shape.ROUND], rocks[Shape.CUBE], max_col
+        )
+        new_round_rocks.extend(new_rocks)
 
+
+def solve_01(data) -> int:
     round_rocks, cube_rocks, max_r, max_c = data
     reflector = rock_platform.Platform(round_rocks, cube_rocks, max_r, max_c)
 
@@ -59,7 +69,7 @@ def solve_01(data) -> int:
         )
         new_round_rocks.extend(new_rocks)
 
-        total_load += count_column_load(new_rocks, max_r)
+    total_load = count_column_load(new_round_rocks, max_r)
 
     return total_load
 
