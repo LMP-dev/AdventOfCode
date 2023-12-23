@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum, auto
 
@@ -43,6 +44,9 @@ class Platform:
 
     def update_round_rocks(self, new_round_rocks: list[coord]) -> None:
         self.round_rocks = new_round_rocks
+
+    def get_copy_object(self) -> Platform:
+        return Platform(self.round_rocks, self.cube_rocks, self.max_row, self.max_col)
 
     def get_rock_rows(self) -> list[int]:
         return [r for (r, c) in self.round_rocks]
