@@ -91,6 +91,7 @@ def spin_cycle(reflector: rock_platform.Platform) -> None:
 
 
 def find_cycle_pattern(reflector: rock_platform.Platform) -> tuple[int, int]:
+    """Reflector ends in the state that starts the pattern"""
     previous_spins = [reflector.get_copy_object()]
     cycle = 0
     while True:
@@ -108,17 +109,30 @@ def find_cycle_pattern(reflector: rock_platform.Platform) -> tuple[int, int]:
 
 
 def solve_01(data) -> int:
+    total_of_cycles = 1000000000
+
     round_rocks, cube_rocks, max_r, max_c = data
     reflector = rock_platform.Platform(round_rocks, cube_rocks, max_r, max_c)
 
+    # Find cycle pattern
     cycle_origin, cycle_end = find_cycle_pattern(
         reflector
     )  # cycle 0 is originial position
+    cycle_pattern = cycle_end - cycle_origin
 
-    print(
-        f"Cycle origin starts at {cycle_origin} and it is repeated at cycle {cycle_end}"
-    )
-    return 0
+    # Remove cycles until arriving to pattern:
+    cycles_to_do = total_of_cycles - (cycle_origin - 1)
+
+    # Remove complete cycles of the pattern:
+    cycles_to_do = cycles_to_do % cycle_pattern
+
+    # Perform remaining cycles until total
+    for _ in range(cycles_to_do - 1):  # -1 due to alredy at start of pattern
+        spin_cycle(reflector)
+
+    rock_rows = reflector.get_rock_rows()
+
+    return count_column_load(rock_rows, max_r)
 
 
 def main() -> None:
@@ -127,10 +141,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example 1 is {solution}")
-    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    # data = parse_input(file_content)
-    # solution = solve_01(data)
-    # print(f"The solution of the part 1 is {solution}")
+    file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    data = parse_input(file_content)
+    solution = solve_01(data)
+    print(f"The solution of the part 1 is {solution}")
 
 
 if __name__ == "__main__":
