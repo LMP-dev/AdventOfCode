@@ -7,3 +7,7 @@ Here are the instructions to use setup.py for your advent of code:
 - Click on Applications under the Console tab.
 - Click on Cookies under the Storage menu.
 - Copy the column Value field into a file called the same as the SESSION_ID_FILE constant in setup.py  (in here "session.cookie")
+
+The virtual environment used need the following libraries:
+- pip install requests
+- pip install Jinja2

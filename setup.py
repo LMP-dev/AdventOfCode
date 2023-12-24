@@ -9,10 +9,10 @@
 from pathlib import Path
 import sys
 from datetime import datetime
-import requests
 
 # 3rd party library
 from jinja2 import Environment, FileSystemLoader
+import requests
 
 REPO_PATH = Path(__file__).parent
 TEMPLATE_PATH = REPO_PATH / "templates"
