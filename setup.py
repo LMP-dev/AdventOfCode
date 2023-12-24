@@ -119,6 +119,7 @@ def get_day_and_year() -> tuple[str, str]:
 
 
 def main_1() -> None:
+    """Creates empty template for part 1, empty example text file and downloads input from advent of code website"""
     # Read arguments or ask for inputs:
     day, year = get_day_and_year()
 
@@ -140,6 +141,7 @@ def main_1() -> None:
 
 
 def main_2() -> None:
+    """Only creates empty template for part 2"""
     # Read arguments or ask for inputs:
     day, year = get_day_and_year()
 
