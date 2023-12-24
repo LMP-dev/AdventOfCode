@@ -9,6 +9,7 @@
 from pathlib import Path
 import sys
 from datetime import datetime
+import requests
 
 # 3rd party library
 from jinja2 import Environment, FileSystemLoader
@@ -19,6 +20,8 @@ TEMPLATE_PATH = REPO_PATH / "templates"
 PUZZLE_TEMPLATE_FILENAME = "main.txt"
 FIRST_PUZZLE_NAME = "PuzzleA.py"
 EXAMPLE_NAME = "example_1.txt"
+PUZZLE_INPUT_FILENAME = "input.txt"
+SESSION_ID_FILE = "session.cookie"  # Make sure you have created this file (is in .gitignore to avoid security breaches)
 
 
 def create_puzzle_folder(year: str, day: str) -> Path:
@@ -69,6 +72,37 @@ def parse_system_arguments() -> tuple[str | None, str | None]:
         )
 
 
+def store_file(file_path: Path, content="") -> None:
+    with open(file_path, "w") as file:
+        file.write(content)
+
+
+def get_url(year: int, day: int):
+    return f"https://adventofcode.com/{year}/day/{day}/input"
+
+
+def get_session_id(cookie_file: Path) -> str:
+    with open(cookie_file) as file:
+        return file.read().strip()
+
+
+def download_problem_data(day: int, year: int, path_to_save: Path) -> None:
+    # Create url and session inputs
+    url = get_url(int(year), int(day))
+    cookies = {"session": get_session_id()}
+
+    # Connect to Advent of Code website
+    response = requests.get(url, cookies=cookies)
+    if not response.ok:
+        raise RuntimeError(
+            f"Request failed\n\tstatus code: {response.status_code}\n\tmessage: {response.content}"
+        )
+
+    # Store input file
+    with open(path_to_save, "w") as file:
+        file.write(response.text[:-1])
+
+
 def main() -> None:
     # Read arguments or ask for inputs:
     day, year = parse_system_arguments()  # format is str
@@ -84,13 +118,11 @@ def main() -> None:
     puzzle_path = create_puzzle_folder(year, day)
 
     # Create files
-    with open(puzzle_path / FIRST_PUZZLE_NAME, "w") as file:
-        file.write(content)
-    with open(puzzle_path / EXAMPLE_NAME, "w") as file:
-        file.write("")
+    store_file(puzzle_path / FIRST_PUZZLE_NAME, content=content)
+    store_file(puzzle_path / EXAMPLE_NAME)
 
     # Download problem data
-    # TODO
+    download_problem_data(int(day), int(year), puzzle_path / PUZZLE_INPUT_FILENAME)
 
     # Create testing folders and templates
     # TODO
