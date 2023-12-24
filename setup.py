@@ -19,16 +19,21 @@ TEMPLATE_PATH = REPO_PATH / "templates"
 
 PUZZLE_TEMPLATE_FILENAME = "main.txt"
 FIRST_PUZZLE_NAME = "PuzzleA.py"
+SECOND_PUZZLE_NAME = "PuzzleB.py"
 EXAMPLE_NAME = "example_1.txt"
 PUZZLE_INPUT_FILENAME = "input.txt"
 SESSION_ID_FILE = "session.cookie"  # Make sure you have created this file (is in .gitignore to avoid security breaches)
 
 
-def create_puzzle_folder(year: str, day: str) -> Path:
+def create_puzzle_path(day: str, year: str) -> Path:
+    return REPO_PATH / year / f"day_{int(day):02d}"
+
+
+def create_puzzle_folder(day: str, year: str) -> Path:
     """Creates the year folder (if does not exists) and then the day folder"""
     Path(REPO_PATH / year).mkdir(exist_ok=True)
     try:
-        puzzle_path = REPO_PATH / year / f"day_{int(day):02d}"
+        puzzle_path = create_puzzle_path(day, year)
         puzzle_path.mkdir()
     except FileExistsError:
         raise Exception(
@@ -77,7 +82,7 @@ def store_file(file_path: Path, content="") -> None:
         file.write(content)
 
 
-def get_url(year: int, day: int):
+def get_url(day: int, year: int):
     return f"https://adventofcode.com/{year}/day/{day}/input"
 
 
@@ -88,7 +93,7 @@ def get_session_id(cookie_file: Path) -> str:
 
 def download_problem_data(day: int, year: int, path_to_save: Path) -> None:
     # Create url and session inputs
-    url = get_url(int(year), int(day))
+    url = get_url(int(day), int(year))
     cookies = {"session": get_session_id(SESSION_ID_FILE)}
 
     # Connect to Advent of Code website
@@ -103,19 +108,25 @@ def download_problem_data(day: int, year: int, path_to_save: Path) -> None:
         file.write(response.text[:-1])
 
 
-def main() -> None:
-    # Read arguments or ask for inputs:
+def get_day_and_year() -> tuple[str, str]:
     day, year = parse_system_arguments()  # format is str
     if year is None:
         year = input("Which year do you want to do (format yyyy)?\n")
     if day is None:
         day = input("Which day do you want to solve (format d or dd)?\n")
 
+    return day, year
+
+
+def main_1() -> None:
+    # Read arguments or ask for inputs:
+    day, year = get_day_and_year()
+
     # Create main.py template content
     content = create_puzzle_template_file_content(part=1)
 
     # Create folders
-    puzzle_path = create_puzzle_folder(year, day)
+    puzzle_path = create_puzzle_folder(day, year)
 
     # Create files
     store_file(puzzle_path / FIRST_PUZZLE_NAME, content=content)
@@ -128,5 +139,23 @@ def main() -> None:
     # TODO
 
 
+def main_2() -> None:
+    # Read arguments or ask for inputs:
+    day, year = get_day_and_year()
+
+    # Create main.py template content
+    content = create_puzzle_template_file_content(part=2)
+
+    # Create files
+    puzzle_path = create_puzzle_path(day, year)
+    store_file(puzzle_path / SECOND_PUZZLE_NAME, content=content)
+
+
 if __name__ == "__main__":
-    main()
+    part = input("Which problem part are you trying to solve (1 or 2)?\n")
+    if part == "1":
+        main_1()
+    elif part == "2":
+        main_2()
+    else:
+        raise Exception(f"Please, select a correct part problem: 1 or 2")
