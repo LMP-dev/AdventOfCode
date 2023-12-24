@@ -89,7 +89,7 @@ def get_session_id(cookie_file: Path) -> str:
 def download_problem_data(day: int, year: int, path_to_save: Path) -> None:
     # Create url and session inputs
     url = get_url(int(year), int(day))
-    cookies = {"session": get_session_id()}
+    cookies = {"session": get_session_id(SESSION_ID_FILE)}
 
     # Connect to Advent of Code website
     response = requests.get(url, cookies=cookies)
