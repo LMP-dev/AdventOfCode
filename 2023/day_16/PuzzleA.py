@@ -7,15 +7,15 @@ from enum import Enum, auto
 INPUT_FILE_PATH = Path(__file__).parent
 
 
+class OutOfBoundsException(Exception):
+    pass
+
+
 class Direction(Enum):
     UP = auto()
     RIGTH = auto()
     DOWN = auto()
     LEFT = auto()
-
-
-class OutOfBoundsException(Exception):
-    pass
 
 
 @dataclass
@@ -25,10 +25,14 @@ class Beam:
     direction: Direction
     visited_tiles: list[tuple[tuple[int, int], Direction]] = field(default_factory=list)
 
+    def __post_init__(self):
+        if not self.visited_tiles:
+            self.visited_tiles.append(((self.row, self.col), self.direction))
+
     def move(
         self, mirror_map: list[list[str]], max_row, max_col
     ) -> tuple[bool, list[Beam]]:
-        # Move to next position
+        # Find next position
         try:
             next_row, next_col = self._next_position_coordinates(max_row, max_col)
         except OutOfBoundsException:
@@ -39,13 +43,25 @@ class Beam:
         if tile in self.visited_tiles:
             return False, [self]
 
-        # Update direction in new position
+        # Find direction in new tile
         mirror = mirror_map[next_row][next_col]
         new_direction = self._change_direction(mirror)
         if isinstance(new_direction, tuple):
-            ...
+            new_beams = []
+            for dir in new_direction:
+                beam = Beam(next_row, next_col, dir, visited_tiles=self.visited_tiles)
+                beam.visited_tiles.append(tile)
+                new_beams.append(beam)
+            return True, new_beams
         else:
-            ...
+            self.update_state(next_row, next_col, new_direction)
+            self.visited_tiles.append(tile)
+            return True, [self]
+
+    def update_state(self, row: int, col: int, dir: Direction) -> None:
+        self.row = row
+        self.col = col
+        self.direction = dir
 
     def _next_position_coordinates(self, max_row: int, max_col: int) -> tuple[int, int]:
         if self.direction == Direction.RIGTH:
@@ -127,11 +143,22 @@ def solve_01(data: tuple[list[list[str]], int, int]) -> int:
     mirrors, max_r, max_c = data
     energized_tiles = set()
 
-    beams_moving = [Beam(0, 0, Direction.RIGTH)]
-    beams_end_travel = []
+    beams_moving: list[Beam] = [Beam(0, 0, Direction.RIGTH)]
+    beams_end_travel: list[Beam] = []
 
+    # Make the beam travel through the mirrors
     while beams_moving:
-        ...
+        beam = beams_moving.pop()
+        is_new_tile, beams = beam.move(mirrors, max_r, max_c)
+        if is_new_tile:
+            beams_moving.extend(beams)
+        else:
+            beams_end_travel.extend(beams)
+
+    # Calculate the energized tiles
+    for beam in beams_end_travel:
+        tiles = [visited[0] for visited in beam.visited_tiles]
+        energized_tiles.update(tiles)
 
     return len(energized_tiles)
 
