@@ -84,10 +84,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example 1 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    data = parse_input(file_content)
-    solution = solve_01(data)
-    print(f"The solution of the part 1 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    # data = parse_input(file_content)
+    # solution = solve_01(data)
+    # print(f"The solution of the part 1 is {solution}")
 
 
 if __name__ == "__main__":
