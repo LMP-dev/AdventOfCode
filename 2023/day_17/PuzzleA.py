@@ -1,6 +1,5 @@
 # Standard library
 from pathlib import Path
-from functools import partial
 
 # .py modules
 from city_block import CityBlock, Direction
@@ -17,7 +16,7 @@ def read_data(
     return lines
 
 
-Grid: dict[tuple[int, int], int]
+Grid = dict[tuple[int, int], int]
 
 
 def parse_input(file_content: list[str]) -> Grid:
@@ -48,7 +47,7 @@ def solve_01(data) -> int:
         if current_block.loc == finishing_loc:
             break
         else:
-            queue.extend(current_block.next_blocks)
+            queue.extend(current_block.next_blocks(data))
 
     return sum(current_block.heat_loss_path)
 
