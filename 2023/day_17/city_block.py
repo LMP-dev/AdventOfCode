@@ -44,10 +44,7 @@ class CityBlock:
             Direction.LEFT,
             Direction.DOWN,
         ]
-        try:
-            next_directions.remove(OPPOSITE_DIRECTION[self.coming_from])
-        except ValueError:
-            pass
+        next_directions.remove(OPPOSITE_DIRECTION[self.coming_from])
 
         # Avoid moving more than 3 consequtive directions
         if self.check_three_same_last_moves():
@@ -83,8 +80,8 @@ class CityBlock:
         self, loc: tuple[int, int], coming_from: Direction, heat_loss: int
     ) -> CityBlock:
         block = CityBlock(loc, coming_from, self.accumulated_heat_loss + heat_loss)
-        block.heat_loss_path = self.heat_loss_path.copy()
         block.last_three_moves = self.last_three_moves.copy()
+        block.heat_loss_path = self.heat_loss_path.copy()
         block.heat_loss_path.append(heat_loss)
         block.update_last_moves(coming_from)
         return block
