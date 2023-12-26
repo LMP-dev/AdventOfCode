@@ -1,7 +1,33 @@
 # Standard library
+from __future__ import annotations
 from pathlib import Path
+from dataclasses import dataclass, field
+from enum import Enum, auto
 
 INPUT_FILE_PATH = Path(__file__).parent
+
+
+class Direction(Enum):
+    RIGHT = auto()
+    TOP = auto()
+    LEFT = auto()
+    DOWN = auto()
+
+
+@dataclass
+class CityBlock:
+    loc: tuple[int, int]
+    coming_from: Direction
+    heat_loss: int
+    followed_path: list[CityBlock] = field(default_factory=list)
+
+    def next_blocks(self) -> list[CityBlock]:
+        next_directions = Direction._member_names_.remove(self.coming_from)
+
+        # Check 3 consecutive paths
+        ...
+
+        return
 
 
 def read_data(
