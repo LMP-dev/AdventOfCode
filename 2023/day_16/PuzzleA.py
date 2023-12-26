@@ -18,6 +18,76 @@ class Direction(Enum):
     LEFT = auto()
 
 
+NEXT_STEP_OFFSETS: dict[Direction, tuple[int, int]] = {
+    Direction.RIGTH: (0, 1),
+    Direction.UP: (-1, 0),
+    Direction.LEFT: (0, -1),
+    Direction.DOWN: (1, 0),
+}
+
+
+def add_tuples(one: tuple[int, int], other: tuple[int, int]) -> tuple[int, int]:
+    return (one[0] + other[0], one[1] + other[1])
+
+
+@dataclass(frozen=True)
+class State:
+    location: tuple[int, int]
+    facing: Direction
+
+    def next_state(self, mirror: str) -> list[State]:
+        match mirror:
+            case ".":
+                return [State(self._next_location(), self.facing)]
+            case "-" if self.facing in (Direction.RIGTH, Direction.LEFT):
+                return [State(self._next_location(), self.facing)]
+            case "|" if self.facing in (Direction.UP, Direction.DOWN):
+                return [State(self._next_location(), self.facing)]
+            case "/":
+                if self.facing == Direction.RIGTH:
+                    new_facing = Direction.UP
+                if self.facing == Direction.UP:
+                    new_facing = Direction.RIGTH
+                if self.facing == Direction.LEFT:
+                    new_facing = Direction.DOWN
+                if self.facing == Direction.DOWN:
+                    new_facing = Direction.LEFT
+                return [State(self._next_location(new_facing), new_facing)]
+            case "\\":
+                if self.facing == Direction.RIGTH:
+                    new_facing = Direction.DOWN
+                if self.facing == Direction.DOWN:
+                    new_facing = Direction.RIGTH
+                if self.facing == Direction.LEFT:
+                    new_facing = Direction.UP
+                if self.facing == Direction.UP:
+                    new_facing = Direction.LEFT
+                return [State(self._next_location(new_facing), new_facing)]
+            case "-":  # Already considered case passing through
+                new_facings = (Direction.LEFT, Direction.RIGTH)
+                return [
+                    State(self._next_location(new_facing), new_facing)
+                    for new_facing in new_facings
+                ]
+            case "|":  # Already considered case passing through
+                new_facings = (Direction.UP, Direction.DOWN)
+                return [
+                    State(self._next_location(new_facing), new_facing)
+                    for new_facing in new_facings
+                ]
+            case _:
+                raise Exception(
+                    f"Cannot calculate next step from {self}, and mirror {mirror}"
+                )
+
+    def _next_location(self, new_facing: Direction = None) -> tuple[int, int]:
+        if new_facing:
+            offset = NEXT_STEP_OFFSETS[new_facing]
+        else:
+            offset = NEXT_STEP_OFFSETS[self.facing]
+        return add_tuples(self.location, offset)
+
+
 @dataclass
 class Beam:
     row: int
@@ -29,9 +99,7 @@ class Beam:
         if not self.visited_tiles:
             self.visited_tiles.append(((self.row, self.col), self.direction))
 
-    def move(
-        self, mirror_map: list[list[str]], max_row, max_col
-    ) -> tuple[bool, list[Beam]]:
+    def move(self, mirror_map: Grid, max_row, max_col) -> tuple[bool, list[Beam]]:
         # Find next position
         try:
             next_row, next_col = self._next_position_coordinates(max_row, max_col)
@@ -44,7 +112,7 @@ class Beam:
             return False, [self]
 
         # Find direction in new tile
-        mirror = mirror_map[next_row][next_col]
+        mirror = mirror_map[(next_row, next_col)]
         new_direction = self._change_direction(mirror)
         if isinstance(new_direction, tuple):
             new_beams = []
@@ -126,39 +194,36 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]) -> tuple[list[list[str]], int, int]:
-    grid: list[list[str]] = []
-    max_row = None
-    max_col = None
+Grid = dict[tuple[int, int], str]
+
+
+def parse_input(file_content: list[str]) -> Grid:
+    grid = dict()
     for r, line in enumerate(file_content):
         # Parse lines and add extra expanded rows when all "."
         row = list(line)
-        grid.append(row)
-    max_row = r
-    max_col = len(row) - 1
-    return grid, max_row, max_col
+        grid.update({(r, c): char for c, char in enumerate(row)})
+    return grid
 
 
-def solve_01(data: tuple[list[list[str]], int, int]) -> int:
-    mirrors, max_r, max_c = data
-    energized_tiles = set()
+def solve_01(data: Grid) -> int:
+    visited: set[State] = set()
+    queue: list[State] = [State((0, 0), Direction.RIGTH)]
 
-    beams_moving: list[Beam] = [Beam(0, 0, Direction.RIGTH)]
-    beams_end_travel: list[Beam] = []
+    while queue:
+        current_state = queue.pop()
+        if current_state in visited:
+            continue
 
-    # Make the beam travel through the mirrors
-    while beams_moving:
-        beam = beams_moving.pop()
-        is_new_tile, beams = beam.move(mirrors, max_r, max_c)
-        if is_new_tile:
-            beams_moving.extend(beams)
-        else:
-            beams_end_travel.extend(beams)
+        visited.add(current_state)
 
-    # Calculate the energized tiles
-    for beam in beams_end_travel:
-        tiles = [visited[0] for visited in beam.visited_tiles]
-        energized_tiles.update(tiles)
+        next_states = current_state.next_state(data[current_state.location])
+        for next_state in next_states:
+            # Check state is inside grid
+            if next_state.location in data:
+                queue.append(next_state)
+
+    energized_tiles = {state.location for state in visited}
 
     return len(energized_tiles)
 
@@ -172,7 +237,7 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve_01(data)
-    print(f"The solution of the part 1 is {solution}")
+    print(f"The solution of the part 1 is {solution}")  # Wrong solution 8406
 
 
 if __name__ == "__main__":
