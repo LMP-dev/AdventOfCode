@@ -32,7 +32,6 @@ class State:
     location: tuple[int, int]
     facing: Direction
 
-    @cached_property
     def next_state(self, mirror: str) -> list[State]:
         match mirror:
             case ".":
@@ -112,9 +111,9 @@ def generate_initial_positions(max_row, max_col) -> list[State]:
     positions: list[State] = []
 
     left_side = [State((r, 0), Direction.RIGTH) for r in range(max_row + 1)]
-    down_side = [State((max_row, c), Direction.RIGTH) for c in range(max_col + 1)]
-    right_side = [State((r, max_col), Direction.RIGTH) for r in range(max_row + 1)]
-    up_side = [State((0, c), Direction.RIGTH) for c in range(max_col + 1)]
+    down_side = [State((max_row, c), Direction.UP) for c in range(max_col + 1)]
+    right_side = [State((r, max_col), Direction.LEFT) for r in range(max_row + 1)]
+    up_side = [State((0, c), Direction.DOWN) for c in range(max_col + 1)]
 
     positions.extend(left_side)
     positions.extend(down_side)
@@ -124,12 +123,11 @@ def generate_initial_positions(max_row, max_col) -> list[State]:
     return positions
 
 
-def solve_02(data: tuple[Grid, int, int]) -> int:
-    mirrors, max_r, max_c = data
-    for initial_pos in generate_initial_positions(max_r, max_c):
-        ...
+def find_energized_tiles(
+    initial_pos: State, mirrors: dict[tuple[int, int], str]
+) -> int:
     visited: set[State] = set()
-    queue: list[State] = [State((0, 0), Direction.RIGTH)]
+    queue: list[State] = [initial_pos]
 
     while queue:
         current_state = queue.pop()
@@ -138,15 +136,24 @@ def solve_02(data: tuple[Grid, int, int]) -> int:
 
         visited.add(current_state)
 
-        next_states = current_state.next_state(data[current_state.location])
+        next_states = current_state.next_state(mirrors[current_state.location])
         for next_state in next_states:
             # Check state is inside grid
-            if next_state.location in data:
+            if next_state.location in mirrors:
                 queue.append(next_state)
 
     energized_tiles = {state.location for state in visited}
-
     return len(energized_tiles)
+
+
+def solve_02(data: tuple[Grid, int, int]) -> int:
+    mirrors, max_r, max_c = data
+    max_energized_tiles = 0
+    for initial_pos in generate_initial_positions(max_r, max_c):
+        num_energized_tiles = find_energized_tiles(initial_pos, mirrors)
+        max_energized_tiles = max(max_energized_tiles, num_energized_tiles)
+
+    return max_energized_tiles
 
 
 def main() -> None:
