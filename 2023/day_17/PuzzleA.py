@@ -24,13 +24,13 @@ def parse_input(file_content: list[str]) -> Grid:
     for r, line in enumerate(file_content):
         # Parse lines and add extra expanded rows when all "."
         row = list(line)
-        grid.update({(r, c): char for c, char in enumerate(row)})
+        grid.update({(r, c): int(value) for c, value in enumerate(row)})
     return grid
 
 
 def solve_01(data) -> int:
-    queue: list[CityBlock] = [CityBlock((0, 0), Direction.RIGHT, data[(0, 0)])]
-    visited: list[tuple(int, int)] = []
+    queue: list[CityBlock] = [CityBlock((0, 0), Direction.RIGHT, 0)]
+    visited: set[tuple(int, int)] = set()
 
     finishing_loc = max(data.keys())
     distance_funct = distance.get_distance_a_star(finishing_loc)
@@ -38,18 +38,30 @@ def solve_01(data) -> int:
     while queue:
         # Sort according to heat loss
         queue.sort(key=distance.distance_dikstra)
-        current_block = queue.pop(0)
+        index = 0
 
-        if current_block.loc in visited:
-            continue
-        visited.append(current_block.loc)
+        lowest_blocks = [
+            block
+            for block in queue
+            if block.accumulated_heat_loss == queue[0].accumulated_heat_loss
+        ]
 
-        if current_block.loc == finishing_loc:
-            break
-        else:
-            queue.extend(current_block.next_blocks(data))
+        current_blocks = [queue.pop(0) for _ in lowest_blocks]
+        blocks_to_visit = []
+        for current_block in current_blocks:
+            if current_block.loc in visited:
+                continue
+            blocks_to_visit.append(current_block)
 
-    return sum(current_block.heat_loss_path)
+            if current_block.loc == finishing_loc:
+                break
+            else:
+                queue.extend(current_block.next_blocks(data))
+        for block in blocks_to_visit:
+            visited.add(block.loc)
+
+    print(current_block.heat_loss_path)
+    return current_block.accumulated_heat_loss
 
 
 def main() -> None:
