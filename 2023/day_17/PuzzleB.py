@@ -68,8 +68,8 @@ def add_tuples(one: tuple[int, int], other: tuple[int, int]) -> tuple[int, int]:
 
 def solve_02(data) -> int:
     queue: list[tuple[int, State, int]] = [
-        (0, State((0, 0), Direction.DOWN), 1),
-        (0, State((0, 0), Direction.RIGHT), 1),
+        (0, State((0, 0), Direction.DOWN), 0),
+        (0, State((0, 0), Direction.RIGHT), 0),
     ]
     visited: set[tuple[State, int]] = set()
     finishing_loc = max(data.keys())
@@ -88,42 +88,28 @@ def solve_02(data) -> int:
         visited.add((position, num_steps))
 
         # Find allowed new directions and move
-        if num_steps < MIN_MOV:  # Can only follow same direction
-            direction = position.facing
-            next_num_steps = num_steps + 1
-            offset = NEXT_STEP_OFFSETS[direction]
-            loc = add_tuples(position.location, offset)
-
-            # Check if allowed movement
-            if loc not in data:
+        next_directions: list[Direction] = [
+            Direction.RIGHT,
+            Direction.UP,
+            Direction.LEFT,
+            Direction.DOWN,
+        ]
+        next_directions.remove(OPPOSITE_DIRECTION[position.facing])
+        for direction in next_directions:
+            if direction != position.facing and num_steps >= MIN_MOV:
+                next_num_steps = 1
+            elif direction == position.facing and num_steps < MAX_MOV:
+                next_num_steps = num_steps + 1
+            else:
                 continue
-
-            heappush(queue, (heat + data[loc], State(loc, direction), next_num_steps))
-        else:
-            next_directions: list[Direction] = [
-                Direction.RIGHT,
-                Direction.UP,
-                Direction.LEFT,
-                Direction.DOWN,
-            ]
-            next_directions.remove(OPPOSITE_DIRECTION[position.facing])
-            for direction in next_directions:
-                if direction == position.facing:  # Check not max movement achieved
-                    next_num_steps = num_steps + 1
-                    if next_num_steps > MAX_MOV:
-                        continue
-                else:
-                    next_num_steps = 1
-                offset = NEXT_STEP_OFFSETS[direction]
-                loc = add_tuples(position.location, offset)
-
-                # Check if allowed movement
-                if loc not in data:
-                    continue
-
-                heappush(
-                    queue, (heat + data[loc], State(loc, direction), next_num_steps)
-                )
+            offset = NEXT_STEP_OFFSETS[direction]
+            new_loc = add_tuples(position.location, offset)
+            # Check if allowed movement
+            if new_loc not in data:
+                continue
+            heappush(
+                queue, (heat + data[new_loc], State(new_loc, direction), next_num_steps)
+            )
 
 
 def main() -> None:
