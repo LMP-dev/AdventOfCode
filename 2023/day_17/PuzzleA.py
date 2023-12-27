@@ -4,7 +4,6 @@ from heapq import heappop, heappush
 from dataclasses import dataclass
 from enum import Enum, auto
 
-# .py modules
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -71,12 +70,10 @@ def solve_01(data) -> int:
         (0, State((0, 0), Direction.RIGHT), 1),
     ]
     visited: set[tuple[State, int]] = set()
-
     finishing_loc = max(data.keys())
-    # distance_funct = distance.get_distance_a_star(finishing_loc)
 
+    # Dijkstra algortithm
     while queue:
-        # Sort according to heat loss
         heat, position, num_steps = heappop(queue)
 
         if (position, num_steps) in visited:
