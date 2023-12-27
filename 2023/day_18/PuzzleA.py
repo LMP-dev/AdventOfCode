@@ -1,6 +1,5 @@
 # Standard library
 from pathlib import Path
-from typing import Any
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -13,11 +12,16 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]) -> Any:
-    return 
+def parse_input(file_content: list[str]) -> list[tuple[str, int, str]]:
+    instructions = []
+    for line in file_content:
+        dir, steps, color = line.split(" ")
+        instructions.append((dir, int(steps), color[1:-1]))
+    return instructions
 
 
-def solve_01(data: Any) -> int:
+def solve_01(data: list[tuple[str, int, str]]) -> int:
+    print(data[0])
     return
 
 
