@@ -78,16 +78,17 @@ def solve_02(data) -> int:
     while queue:
         heat, position, num_steps = heappop(queue)
 
-        if (position, num_steps) in visited:
-            continue
-        visited.add((position, num_steps))
-
         # Check if final position achieved and can stop
         if position.location == finishing_loc and num_steps >= MIN_MOV:
             return heat
 
-        # Find allowed new directions
-        if num_steps < MIN_MOV:
+        # Check if position visited
+        if (position, num_steps) in visited:
+            continue
+        visited.add((position, num_steps))
+
+        # Find allowed new directions and move
+        if num_steps < MIN_MOV:  # Can only follow same direction
             direction = position.facing
             next_num_steps = num_steps + 1
             offset = NEXT_STEP_OFFSETS[direction]
@@ -97,8 +98,7 @@ def solve_02(data) -> int:
             if loc not in data:
                 continue
 
-            new_heat = data[loc]
-            heappush(queue, (heat + new_heat, State(loc, direction), next_num_steps))
+            heappush(queue, (heat + data[loc], State(loc, direction), next_num_steps))
         else:
             next_directions: list[Direction] = [
                 Direction.RIGHT,
@@ -108,7 +108,7 @@ def solve_02(data) -> int:
             ]
             next_directions.remove(OPPOSITE_DIRECTION[position.facing])
             for direction in next_directions:
-                if direction == position.facing:
+                if direction == position.facing:  # Check not max movement achieved
                     next_num_steps = num_steps + 1
                     if next_num_steps > MAX_MOV:
                         continue
@@ -121,9 +121,8 @@ def solve_02(data) -> int:
                 if loc not in data:
                     continue
 
-                new_heat = data[loc]
                 heappush(
-                    queue, (heat + new_heat, State(loc, direction), next_num_steps)
+                    queue, (heat + data[loc], State(loc, direction), next_num_steps)
                 )
 
 
