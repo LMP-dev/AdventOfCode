@@ -39,7 +39,7 @@ class State:
 
     def __lt__(self, other) -> bool:
         if isinstance(other, State):
-            return self.location < other.location
+            return self.location > other.location
 
 
 def read_data(
@@ -82,7 +82,8 @@ def solve_02(data) -> int:
             continue
         visited.add((position, num_steps))
 
-        if position.location == finishing_loc:
+        # Check if final position achieved and can stop
+        if position.location == finishing_loc and num_steps >= MIN_MOV:
             return heat
 
         # Find allowed new directions
@@ -108,9 +109,9 @@ def solve_02(data) -> int:
             next_directions.remove(OPPOSITE_DIRECTION[position.facing])
             for direction in next_directions:
                 if direction == position.facing:
-                    if num_steps == MAX_MOV:
-                        continue
                     next_num_steps = num_steps + 1
+                    if next_num_steps > MAX_MOV:
+                        continue
                 else:
                     next_num_steps = 1
                 offset = NEXT_STEP_OFFSETS[direction]
