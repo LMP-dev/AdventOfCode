@@ -18,6 +18,9 @@ class Trench:
     position: tuple[int, int]
     color: str
 
+    def translate(self, movement: tuple[int, int]) -> None:
+        self.position = add_tuples(self.position, movement)
+
 
 def read_data(
     file_path: Path,
@@ -50,24 +53,76 @@ def dig_trenches(
     return trenches, current_pos
 
 
-def dig_inside_trenches_loop(trenches: list[Trench]) -> list[tuple[int, int]]:
-    ...
+def next_dig_locations(position: tuple[int, int]) -> list[tuple[int, int]]:
+    return [
+        add_tuples(position, movement)
+        for movement in [(1, 0), (0, 1), (-1, 0), (0, -1)]
+    ]
+
+
+def dig_inside_trenches_loop(
+    trenches: list[Trench], inside_pos: tuple[int, int]
+) -> set[tuple[int, int]]:
+    """returns all the digged positions (both trenches and inside)"""
+    digged: set[tuple(int, int)] = {trench.position for trench in trenches}
+    to_dig: list(tuple(int, int)) = [inside_pos]
+
+    # Simple check for initial position not on trench
+    if inside_pos in digged:
+        raise Exception(
+            f"The initial inside_position {inside_pos} is already on top of the trench loop! CHoose a new initial position"
+        )
+
+    while to_dig:
+        hole = to_dig.pop()
+        digged.add(hole)
+        new_dig_locations = next_dig_locations(hole)
+        for next_hole in new_dig_locations:
+            if next_hole in digged or next_hole in to_dig:
+                continue
+            else:
+                to_dig.append(next_hole)
+    return digged
+
+
+def find_min_coordinates(
+    current_min_coords: tuple[int, int], new_trenches: list[Trench]
+) -> tuple[int, int]:
+    min_row_coords = [current_min_coords[0]]
+    min_col_coords = [current_min_coords[1]]
+    min_row_coords.extend([trench.position[0] for trench in new_trenches])
+    min_col_coords.extend([trench.position[1] for trench in new_trenches])
+    return min(min_row_coords), min(min_col_coords)
 
 
 def solve_01(data: list[tuple[str, int, str]]) -> int:
     current_pos = (0, 0)
     loop_trenches: list[Trench] = []
+    min_coords = (0, 0)
 
     # Dig loop trenches
     for instruction in data:
         direction, steps, color = instruction
         new_trenches, current_pos = dig_trenches(current_pos, direction, steps, color)
         loop_trenches.extend(new_trenches)
+        min_coords = find_min_coordinates(min_coords, new_trenches)
 
+    # Normalize loop coordinates
+    norm_loop_trenches_pos = [
+        add_tuples(trench.position, (-min_coords[0], -min_coords[1]))
+        for trench in loop_trenches
+    ]
+
+    # Find initial position inside the loop for the second digging cycle
+    norm_loop_trenches_pos.sort()
+    first_row = [
+        pos for pos in norm_loop_trenches_pos if pos[0] == norm_loop_trenches_pos[0][0]
+    ]
+    inside_loop_pos = add_tuples(first_row[0], (1, 1))
     # Dig inside loop
-    inside_holes = dig_inside_trenches_loop(loop_trenches)
+    digged_holes = dig_inside_trenches_loop(loop_trenches, inside_loop_pos)
 
-    return len(loop_trenches)  # + len(inside_holes)
+    return len(digged_holes)
 
 
 def main() -> None:
