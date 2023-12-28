@@ -23,11 +23,13 @@ def parse_input_old(file_content: list[str]) -> list[tuple[str, int]]:
 
 def parse_input(file_content: list[str]) -> list[tuple[str, int]]:
     """return a list with: Direction(str) | steps(int)"""
+    DIRECTIONS = {0: "R", 1: "D", 2: "L", 3: "U"}
     instructions = []
     for line in file_content:
         _, _, hexa_code = line.split(" ")
-
-        # instructions.append((dir, int(steps), color[1:-1]))
+        hexa_number = hexa_code[1:-2]
+        num_direction = hexa_code[-1]
+        instructions.append((DIRECTIONS[num_direction], int(hexa_number, 16)))
     return instructions
 
 
@@ -46,11 +48,18 @@ def find_min_coordinates(
     )
     return min(min_row_coords), min(min_col_coords)
 
+def generate_digged_trench_corners() -> dict[tuple[int, int], list[tuple[int, int]]]
 
 def solve_02(data: list[tuple[str, int]]) -> int:
     current_pos = (0, 0)
     loop_trenches: dict[tuple[int, int], list[tuple[int, int]]] = dict()
     min_coords = (0, 0)
+
+    # Follow instructions to generate all corners coordinates
+
+    # Normalise coordinates to know the initial rectangle
+
+    # Remove the area of the non-digged rectangles
 
     return
 
