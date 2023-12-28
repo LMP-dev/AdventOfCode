@@ -61,11 +61,11 @@ def next_dig_locations(position: tuple[int, int]) -> list[tuple[int, int]]:
 
 
 def dig_inside_trenches_loop(
-    trenches: list[Trench], inside_pos: tuple[int, int]
+    trenches: list[tuple[int, int]], inside_pos: tuple[int, int]
 ) -> set[tuple[int, int]]:
     """returns all the digged positions (both trenches and inside)"""
-    digged: set[tuple(int, int)] = {trench.position for trench in trenches}
-    to_dig: list(tuple(int, int)) = [inside_pos]
+    digged: set[tuple[int, int]] = {trench for trench in trenches}
+    to_dig: list(tuple[int, int]) = [inside_pos]
 
     # Simple check for initial position not on trench
     if inside_pos in digged:
@@ -120,7 +120,7 @@ def solve_01(data: list[tuple[str, int, str]]) -> int:
     ]
     inside_loop_pos = add_tuples(first_row[0], (1, 1))
     # Dig inside loop
-    digged_holes = dig_inside_trenches_loop(loop_trenches, inside_loop_pos)
+    digged_holes = dig_inside_trenches_loop(norm_loop_trenches_pos, inside_loop_pos)
 
     return len(digged_holes)
 
