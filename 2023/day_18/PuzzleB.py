@@ -5,6 +5,14 @@ from typing import Any
 INPUT_FILE_PATH = Path(__file__).parent
 
 
+MOVEMENT: dict[str, tuple[int, int]] = {
+    "R": (0, 1),
+    "U": (-1, 0),
+    "L": (0, -1),
+    "D": (1, 0),
+}
+
+
 def read_data(
     file_path: Path,
 ) -> list[str]:
@@ -48,12 +56,30 @@ def find_min_coordinates(
     )
     return min(min_row_coords), min(min_col_coords)
 
-def generate_digged_trench_corners() -> dict[tuple[int, int], list[tuple[int, int]]]
+
+def advance_one_direction(
+    position: tuple[int, int], direction: str, steps: int
+) -> tuple[int, int]:
+    movement = MOVEMENT[direction]
+    distance = (movement[0] * steps, movement[1] * steps)
+    return add_tuples(position, distance)
+
+
+def generate_digged_trench_corners(
+    starting_pos: tuple[int, int], instructions: list[tuple[str, int]]
+) -> dict[tuple[int, int], list[tuple[int, int]]]:
+    loop_corners: dict[tuple[int, int], list[tuple[int, int]]] = {starting_pos: []}
+    current_pos = starting_pos
+    for instruction in instructions:
+        direction, steps = instruction
+        new_pos = advance_one_direction(current_pos, direction, steps)
+        loop_corners[current_pos].append(new_pos)
+        loop_corners.update[{new_pos: [current_pos]}]
+    return loop_corners  # TODO check initial pos correctly updated
+
 
 def solve_02(data: list[tuple[str, int]]) -> int:
-    current_pos = (0, 0)
-    loop_trenches: dict[tuple[int, int], list[tuple[int, int]]] = dict()
-    min_coords = (0, 0)
+    loop_trenches = generate_digged_trench_corners((0, 0), data)
 
     # Follow instructions to generate all corners coordinates
 
