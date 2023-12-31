@@ -1,6 +1,7 @@
 # Standard library
+from __future__ import annotations
 from pathlib import Path
-from typing import Any
+from dataclasses import dataclass
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -11,6 +12,24 @@ MOVEMENT: dict[str, tuple[int, int]] = {
     "L": (0, -1),
     "D": (1, 0),
 }
+
+
+@dataclass(frozen=True)
+class TrenchCorner:
+    pos: tuple(int, int)
+
+    def normalize(self, distance: tuple[int, int]) -> None:
+        self.pos = add_tuples(self.pos, distance)
+
+    def __eq__(self, other: TrenchCorner | tuple[int, int]) -> bool:
+        if isinstance(other, TrenchCorner):
+            return self.pos == other.pos
+        elif isinstance(other, tuple):
+            return self.pos == other
+        else:
+            raise Exception(
+                f"TrenchCorner class can only be compared to itself or tuples[int,int]. Comparison tryied with {type(other)}"
+            )
 
 
 def read_data(
@@ -68,20 +87,39 @@ def advance_one_direction(
 def generate_digged_trench_corners(
     starting_pos: tuple[int, int], instructions: list[tuple[str, int]]
 ) -> dict[tuple[int, int], list[tuple[int, int]]]:
-    loop_corners: dict[tuple[int, int], list[tuple[int, int]]] = {starting_pos: []}
-    current_pos = starting_pos
+    # Initialize variables
+    initial_corner = TrenchCorner(starting_pos)
+    current_corner = initial_corner
+    loop_corners: dict[tuple[int, int], list[tuple[int, int]]] = {initial_corner: []}
+    # Populate corners graph
     for instruction in instructions:
         direction, steps = instruction
-        new_pos = advance_one_direction(current_pos, direction, steps)
-        loop_corners[current_pos].append(new_pos)
-        loop_corners.update[{new_pos: [current_pos]}]
-    return loop_corners  # TODO check initial pos correctly updated
+        new_pos = advance_one_direction(current_corner.pos, direction, steps)
+        new_corner = TrenchCorner(new_pos)
+        loop_corners[current_corner].append(new_corner)
+        if new_pos != starting_pos:
+            loop_corners.update({new_corner: [current_corner]})
+        else:  # Special case end of loop
+            loop_corners[initial_corner].append(current_corner)
+        current_corner = new_corner
+    return loop_corners
+
+
+def find_min_coordinates(trenches: list[tuple[int, int]]) -> tuple[int, int]:
+    ...
+    return
+
+
+def normalize_trenches_corners_coordinates(
+    trenches: dict[tuple[int, int], list[tuple[int, int]]]
+) -> dict[tuple[int, int], list[tuple[int, int]]]:
+    ...
+    return
 
 
 def solve_02(data: list[tuple[str, int]]) -> int:
-    loop_trenches = generate_digged_trench_corners((0, 0), data)
-
     # Follow instructions to generate all corners coordinates
+    loop_trenches = generate_digged_trench_corners((0, 0), data)
 
     # Normalise coordinates to know the initial rectangle
 
@@ -96,10 +134,10 @@ def main() -> None:
     data = parse_input_old(file_content)
     solution = solve_02(data)
     print(f"The solution of the example 1 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    data = parse_input_old(file_content)
-    solution = solve_02(data)
-    print(f"The solution of the part 2 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    # data = parse_input_old(file_content)
+    # solution = solve_02(data)
+    # print(f"The solution of the part 2 is {solution}")
 
 
 if __name__ == "__main__":
