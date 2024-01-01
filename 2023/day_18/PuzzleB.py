@@ -116,7 +116,26 @@ def solve_02(data: list[tuple[str, int]]) -> int:
 
     # Remove the area of the non-digged rectangles
     total_area = (norm_max_coordinates[0] + 1) * (norm_max_coordinates[1] + 1)
-    # Left vertical side
+    ## Left vertical side
+    col = 0
+    # Find corners on edge
+    corners_on_edge = [
+        corner for corner in normalize_graph_coordinates.keys() if corner[1] == col
+    ]
+    corners_on_edge.sort()
+    initial_point = (0, 0)
+    sides_rectangles = []
+    going_inside = False
+    if initial_point != corners_on_edge[0]:
+        sides_rectangles.append(((0, 0), corners_on_edge[0]))
+
+    for index, corner in enumerate(corners_on_edge):
+        if going_inside:
+            sides_rectangles.append(corner, corners_on_edge[index + 1])
+            going_inside = not going_inside
+        else:
+            going_inside = not going_inside
+            continue
 
     return total_area
 
