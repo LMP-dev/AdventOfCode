@@ -1,7 +1,6 @@
 # Standard library
 from __future__ import annotations
 from pathlib import Path
-from dataclasses import dataclass
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -12,6 +11,9 @@ MOVEMENT: dict[str, tuple[int, int]] = {
     "L": (0, -1),
     "D": (1, 0),
 }
+
+Point = tuple[int, int]
+Graph = dict[Point, list[Point]]
 
 
 def read_data(
@@ -46,20 +48,18 @@ def add_tuples(one: tuple[int, int], other: tuple[int, int]) -> tuple[int, int]:
     return (one[0] + other[0], one[1] + other[1])
 
 
-def advance_one_direction(
-    position: tuple[int, int], direction: str, steps: int
-) -> tuple[int, int]:
+def advance_one_direction(position: Point, direction: str, steps: int) -> Point:
     movement = MOVEMENT[direction]
     distance = (movement[0] * steps, movement[1] * steps)
     return add_tuples(position, distance)
 
 
 def generate_digged_trench_corners(
-    starting_pos: tuple[int, int], instructions: list[tuple[str, int]]
-) -> dict[tuple[int, int], list[tuple[int, int]]]:
+    starting_pos: Point, instructions: list[tuple[str, int]]
+) -> Graph:
     # Initialize variables
     current_corner = starting_pos
-    loop_corners: dict[tuple[int, int], list[tuple[int, int]]] = {current_corner: []}
+    loop_corners: Graph = {current_corner: []}
     # Populate corners graph
     for instruction in instructions:
         direction, steps = instruction
@@ -74,8 +74,8 @@ def generate_digged_trench_corners(
 
 
 def find_min_max_coordinates(
-    trenches: list[tuple[int, int]],
-) -> tuple[tuple[int, int], tuple[int, int]]:
+    trenches: list[Point],
+) -> tuple[Point, Point]:
     min_row = STARTING_POS[0]
     min_col = STARTING_POS[1]
     max_row = STARTING_POS[0]
@@ -88,19 +88,48 @@ def find_min_max_coordinates(
     return (min_row, min_col), (max_row, max_col)
 
 
-def normalize_list_coordinates(
-    coords_list: list[tuple[int, int]], vector: tuple[int, int]
-) -> list[tuple[int, int]]:
+def normalize_list_coordinates(coords_list: list[Point], vector: Point) -> list[Point]:
     return [add_tuples(coord, vector) for coord in coords_list]
 
 
-def normalize_graph_coordinates(
-    graph: dict[tuple[int, int], list[tuple[int, int]]], vector: tuple[int, int]
-) -> dict[tuple[int, int], list[tuple[int, int]]]:
+def normalize_graph_coordinates(graph: Graph, vector: Point) -> Graph:
     return {
         add_tuples(k, vector): normalize_list_coordinates(v, vector)
         for k, v in graph.items()
     }
+
+
+def find_hole_pairs_on_edge(
+    corner_graph,
+    edge: int,
+    end_point: Point,
+    is_vertical_edge: bool,
+    is_inverse_order: bool,
+) -> list[tuple[Point, Point]]:
+    # Find corners on edge
+    if is_vertical_edge:
+        corners_on_edge = [
+            corner for corner in corner_graph.keys() if corner[1] == edge
+        ]
+    else:
+        corners_on_edge = [
+            corner for corner in corner_graph.keys() if corner[0] == edge
+        ]
+    corners_on_edge.sort(reverse=is_inverse_order)
+    holes_side = []
+    going_inside = False
+    if end_point not in corners_on_edge:
+        corners_on_edge.append(end_point)
+
+    for index, corner in enumerate(corners_on_edge):
+        if going_inside:
+            if corner != corners_on_edge[-1]:  # We are not in last corner of the list
+                holes_side.append((corner, corners_on_edge[index + 1]))
+                going_inside = not going_inside
+        else:
+            going_inside = not going_inside
+            continue
+    return holes_side
 
 
 def solve_02(data: list[tuple[str, int]]) -> int:
@@ -116,26 +145,45 @@ def solve_02(data: list[tuple[str, int]]) -> int:
 
     # Remove the area of the non-digged rectangles
     total_area = (norm_max_coordinates[0] + 1) * (norm_max_coordinates[1] + 1)
-    ## Left vertical side
-    col = 0
-    # Find corners on edge
-    corners_on_edge = [
-        corner for corner in normalize_graph_coordinates.keys() if corner[1] == col
-    ]
-    corners_on_edge.sort()
-    initial_point = (0, 0)
-    sides_rectangles = []
-    going_inside = False
-    if initial_point != corners_on_edge[0]:
-        sides_rectangles.append(((0, 0), corners_on_edge[0]))
 
-    for index, corner in enumerate(corners_on_edge):
-        if going_inside:
-            sides_rectangles.append(corner, corners_on_edge[index + 1])
-            going_inside = not going_inside
-        else:
-            going_inside = not going_inside
-            continue
+    ## Find holes on each side
+    exterior_holes = []
+    exterior_holes.extend(
+        find_hole_pairs_on_edge(
+            corner_graph=normalized_corners_graph,
+            edge=0,
+            end_point=(norm_max_coordinates[0], 0),
+            is_vertical_edge=True,
+            is_inverse_order=False,
+        )
+    )  # left side
+    exterior_holes.extend(
+        find_hole_pairs_on_edge(
+            corner_graph=normalized_corners_graph,
+            edge=norm_max_coordinates[0],
+            end_point=norm_max_coordinates,
+            is_vertical_edge=False,
+            is_inverse_order=False,
+        )
+    )  # bottom side
+    exterior_holes.extend(
+        find_hole_pairs_on_edge(
+            corner_graph=normalized_corners_graph,
+            edge=norm_max_coordinates[1],
+            end_point=(0, norm_max_coordinates[1]),
+            is_vertical_edge=True,
+            is_inverse_order=True,
+        )
+    )  # right side
+    exterior_holes.extend(
+        find_hole_pairs_on_edge(
+            corner_graph=normalized_corners_graph,
+            edge=0,
+            end_point=(0, 0),
+            is_vertical_edge=False,
+            is_inverse_order=True,
+        )
+    )  # top side
 
     return total_area
 
