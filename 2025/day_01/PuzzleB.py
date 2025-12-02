@@ -12,11 +12,11 @@ class Dial099:
 
     zero_count: int = 0
 
-    def find_0s(self, instructions: list[tuple[str, int]]) -> int:
-        print(f"The dial points to {self.current}")
+    def find_all_0s(self, instructions: list[tuple[str, int]]) -> int:
         for direction, number in instructions:
             ## Remove complete spins
             spins, rem = divmod(number, 100)  # 0 to 99 is 100 numbers
+            self.zero_count += spins  ## Add passes through 0
 
             if direction == "R":
                 self._move_right(rem)
@@ -25,6 +25,7 @@ class Dial099:
             else:
                 raise Exception(f"Incorrect direction (R,L): {direction}")
 
+            # Check exactly in 0 position
             if self.current == 0:
                 self.zero_count += 1
 
@@ -34,6 +35,8 @@ class Dial099:
         next_number = self.current - positions
         if next_number < 0:
             spins, rem = divmod(next_number, 99)
+            if self.current != 0:
+                self.zero_count += 1  # moving left from 0 not counted
             self.current = rem + 1  # -1 --> 99 (rem=98)
         else:
             self.current = next_number
@@ -42,6 +45,8 @@ class Dial099:
         next_number = self.current + positions
         if next_number > 99:
             spins, rem = divmod(next_number, 99)
+            if rem != 1:
+                self.zero_count += 1  # moving to exactly 0 not counted
             self.current = rem - 1  # 100 --> 0 (rem = 1)
         else:
             self.current = next_number
@@ -63,7 +68,7 @@ def parse_input(file_content: list[str]) -> list[tuple[str, int]]:
 def solve(data: Any) -> int:
     dial = Dial099()
 
-    count = dial.find_0s(data)
+    count = dial.find_all_0s(data)
 
     return count
 
