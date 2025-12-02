@@ -62,7 +62,10 @@ def parse_input(file_content: list[str]) -> list[tuple[str, int]]:
 
 def solve(data: Any) -> int:
     dial = Dial099()
-    return dial.find_0s(data)
+
+    count = dial.find_0s(data)
+
+    return count
 
 
 def main() -> None:
