@@ -4,6 +4,8 @@ from typing import Any
 
 INPUT_FILE_PATH = Path(__file__).parent
 
+DIGITS = 12
+
 
 def read_data(
     file_path: Path,
@@ -22,8 +24,14 @@ def parse_input(file_content: list[str]) -> Any:
 
 def find_biggest_number_and_index(row: list[int], min_size: int) -> tuple[int, int]:
     digit, index = None, None
+    # print(f"Looking at partial bank: {row} with minimum size of {min_size}")
 
-    for i, num in enumerate(row[:-min_size]):
+    if min_size == 0:
+        adapted_row = row
+    else:
+        adapted_row = row[:-min_size]
+
+    for i, num in enumerate(adapted_row):
         if digit is None:
             digit = num
             index = i
@@ -32,43 +40,30 @@ def find_biggest_number_and_index(row: list[int], min_size: int) -> tuple[int, i
                 digit = num
                 index = i
                 break  # Stop at first highest possible number
-            elif num > first:
-                first = num
+            elif num > digit:
+                digit = num
                 index = i
 
     return digit, index
 
 
-def find_joltage(row_num: list[int]) -> int:
-    first, f_index = None, None
-    second = None
+def find_joltage(row_num: list[int], digits: int) -> int:
+    joltage = 0
+    index = -1
 
-    # First digit loop
-    for i, num in enumerate(row_num[:-1]):  # do not consider last digit
-        if first is None:
-            first = num
-            f_index = i
-        else:
-            if num == 9:
-                first = num
-                f_index = i
-                break  # Stop at first highest possible number
-            elif num > first:
-                first = num
-                f_index = i
+    # Initial loops
+    for size in reversed(range(1, digits)):
+        battery_num, new_index = find_biggest_number_and_index(
+            row_num[index + 1 :], size
+        )
+        index += new_index + 1
+        # print(f"number found is {battery_num}")
+        joltage += battery_num * (10**size)
 
-    # Second digit loop
-    for num in row_num[f_index + 1 :]:
-        if second is None:
-            second = num
-        else:
-            if num == 9:
-                second = num
-                break  # Stop at first highest possible number
-            elif num > second:
-                second = num
+    # Last loop
+    battery_num, _ = find_biggest_number_and_index(row_num[index + 1 :], 0)
+    joltage += battery_num
 
-    joltage = first * 10 + second
     # print(f"The Joltage is {joltage}")
     return joltage
 
@@ -76,7 +71,7 @@ def find_joltage(row_num: list[int]) -> int:
 def solve_02(data: Any) -> int:
     joltages = []
     for bank in data:
-        joltages.append(find_joltage(bank))
+        joltages.append(find_joltage(bank, DIGITS))
 
     return sum(joltages)
 
