@@ -36,6 +36,10 @@ def is_bad_id(num: int) -> bool:
     num_str = str(num)
 
     number_size = len(num_str)
+    # Single digits should not be considered
+    if number_size == 1:
+        return False
+
     divisors_length = divisors_without_1(number_size)
 
     for size in divisors_length:
@@ -57,6 +61,7 @@ def solve_02(data: list[tuple[int, int]]) -> int:
     for min_id, max_id in data:
         for id in range(min_id, max_id + 1):  # +1 to end in the number
             if is_bad_id(id):
+                # print(f"In range ({min_id}, {max_id}) the number {id} is invalid")
                 invalid_ids.append(id)
 
     return sum(invalid_ids)
