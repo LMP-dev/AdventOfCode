@@ -13,14 +13,14 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]) -> tuple[set[tuple[int, int]], int, int]:
+def parse_input(file_content: list[str]) -> tuple[list[tuple[int, int]], int, int]:
     """Returns a set with coordinates with paper and max row and max column"""
-    cells_with_paper = set()
+    cells_with_paper = []
 
     for i, line in enumerate(file_content):
         for j, char in enumerate(line):
             if char == "@":
-                cells_with_paper.add((i, j))
+                cells_with_paper.append((i, j))
     max_row = i
     max_col = j
 
@@ -33,42 +33,42 @@ def check_accessible_roll(
     count = 0
     max_count = 3
 
-    # Top cell
-    if cell[1] - 1 < 0:
+    # Top cell --> move row -
+    if cell[0] - 1 < 0:
         t_cell = None
     else:
-        t_cell = (cell[0], cell[1] - 1)
-    # Top-right cell
-    if cell[0] + 1 > max_col or cell[1] - 1 < 0:
+        t_cell = (cell[0] - 1, cell[1])
+    # Top-right cell --> move row - and col +
+    if cell[0] - 1 < 0 or cell[1] + 1 > max_col:
         tr_cell = None
     else:
-        tr_cell = (cell[0] + 1, cell[1] + 1)
-    # Right cell
-    if cell[0] + 1 > max_col:
+        tr_cell = (cell[0] - 1, cell[1] + 1)
+    # Right cell --> move col +
+    if cell[1] + 1 > max_col:
         r_cell = None
     else:
-        r_cell = (cell[0] + 1, cell[1])
-    # Bottom-right cell
-    if cell[0] + 1 > max_row or cell[1] + 1 > max_col:
+        r_cell = (cell[0], cell[1] + 1)
+    # Bottom-right cell --> move row + and col +
+    if cell[0] + 1 > max_col or cell[1] + 1 > max_row:
         br_cell = None
     else:
-        br_cell = (cell[0] + 1, cell[1] - 1)
-    # Bottom cell
+        br_cell = (cell[0] + 1, cell[1] + 1)
+    # Bottom cell --> move row +
     if cell[0] + 1 > max_row:
         b_cell = None
     else:
         b_cell = (cell[0] + 1, cell[1])
-    # Bottom-left cell
-    if cell[0] + 1 < 0 or cell[1] - 1 < 0:
+    # Bottom-left cell --> move row + and col -
+    if cell[0] + 1 > max_row or cell[1] - 1 < 0:
         bl_cell = None
     else:
         bl_cell = (cell[0] + 1, cell[1] - 1)
-    # Left cell
+    # Left cell --> move col -
     if cell[1] - 1 < 0:
         l_cell = None
     else:
         l_cell = (cell[0], cell[1] - 1)
-    # Top-left cell
+    # Top-left cell --> move row - and col -
     if cell[0] - 1 < 0 or cell[1] - 1 < 0:
         tl_cell = None
     else:
@@ -100,7 +100,6 @@ def solve_01(data: Any) -> int:
     for cell in cells_with_paper:
         if check_accessible_roll(cell, cells_with_paper, max_row, max_col):
             count += 1
-            print(f"The cell {cell} is accessible")
 
     return count
 
@@ -111,10 +110,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example 1 is {solution}")
-    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    # data = parse_input(file_content)
-    # solution = solve_01(data)
-    # print(f"The solution of the part 1 is {solution}")
+    file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    data = parse_input(file_content)
+    solution = solve_01(data)
+    print(f"The solution of the part 1 is {solution}")
 
 
 if __name__ == "__main__":
