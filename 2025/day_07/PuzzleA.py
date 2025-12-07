@@ -1,6 +1,6 @@
 # Standard library
 from pathlib import Path
-from typing import Any
+from dataclasses import dataclass
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -13,12 +13,53 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]) -> Any:
-    return 
+def parse_input(file_content: list[str]) -> list[list[str]]:
+    diagram = []
+
+    for line in file_content:
+        diagram.append([char for char in line])
+
+    return diagram
 
 
-def solve_01(data: Any) -> int:
-    return
+class TachyonMainfold:
+    def __init__(
+        self, diagram: list[list[str]], starting_point: tuple[int, int]
+    ) -> None:
+        self.diagram = diagram
+        self.starting_point = starting_point
+        self.max_row = len(diagram) - 1
+
+    def enter_beam(self) -> int:
+        """Returns the number of times a beam splits"""
+        # Initiate variables
+        self.split_counter = 0
+        locations_to_advance: list[tuple[int, int]] = [self.starting_point]
+        visited_locations: set[tuple[int, int]] = set()
+
+        while locations_to_advance:
+            location = locations_to_advance.pop()
+            next_location = (location[0] + 1, location[1])
+            if next_location[0] == self.max_row:
+                continue  # arrived to last row
+
+    def _advance_beam(location: tuple[int, int]) -> None: ...
+
+
+def solve_01(diagram: list[list[str]]) -> int:
+    """
+    Assumptions:
+        - No beam gets outside of diagram when splitting
+        - Last row is all "."
+    """
+    # Find starting position
+    for index, char in enumerate(diagram[0]):
+        if char == "S":
+            starting_point = (0, index)
+
+    tachyon_mainfold = TachyonMainfold(diagram, starting_point)
+
+    return tachyon_mainfold.enter_beam()
 
 
 def main() -> None:
@@ -27,10 +68,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_01(data)
     print(f"The solution of the example 1 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    data = parse_input(file_content)
-    solution = solve_01(data)
-    print(f"The solution of the part 1 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    # data = parse_input(file_content)
+    # solution = solve_01(data)
+    # print(f"The solution of the part 1 is {solution}")
 
 
 if __name__ == "__main__":
