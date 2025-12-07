@@ -24,15 +24,23 @@ def parse_input(file_content: list[str]) -> Any:
         else:
             numbers.append(line.split())
 
-    temp_list = []
+    normal_read_numbers = []
     # Read by columns
     for index, _ in enumerate(operators):
-        temp_list.append([int(nums[index]) for nums in numbers])
+        normal_read_numbers.append([int(nums[index]) for nums in numbers])
+    # do not convert
 
     # Read numbers by celaphod math
-    # TODO
+    temp_list = []
+    # calculate major number
+    # add 0 as strings to other comparing relative lengths
+    # select new numbers (mid 0 should not be considered?)
+    # convert to int
 
-    return temp_list, operators
+    # TODO
+    numbers_to_operate = []
+
+    return normal_read_numbers, operators
 
 
 def solve_02(data: Any) -> int:
