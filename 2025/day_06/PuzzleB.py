@@ -13,7 +13,7 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]) -> tuple[list[list[int], list[str]]]:
+def parse_input(file_content: list[str]) -> Any:
     numbers: list[list[int]] = []
     operators = None
 
@@ -24,15 +24,18 @@ def parse_input(file_content: list[str]) -> tuple[list[list[int], list[str]]]:
         else:
             numbers.append(line.split())
 
-    numbers_to_operate: list[list[int]] = []
+    temp_list = []
     # Read by columns
     for index, _ in enumerate(operators):
-        numbers_to_operate.append([int(nums[index]) for nums in numbers])
+        temp_list.append([int(nums[index]) for nums in numbers])
 
-    return numbers_to_operate, operators
+    # Read numbers by celaphod math
+    # TODO
+
+    return temp_list, operators
 
 
-def solve_01(data: tuple[list[list[int], list[str]]]) -> int:
+def solve_02(data: Any) -> int:
     numbers_to_operate, operators = data
     total = 0
 
@@ -52,12 +55,12 @@ def main() -> None:
     # input.txt | example_1.txt
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
-    print(f"The solution of the example 1 is {solution}")  # Solution 4277556
+    solution = solve_02(data)
+    print(f"The solution of the example 1 is {solution}")
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
-    solution = solve_01(data)
-    print(f"The solution of the part 1 is {solution}")  # Solution 6417439773370
+    solution = solve_02(data)
+    print(f"The solution of the part 2 is {solution}")
 
 
 if __name__ == "__main__":
