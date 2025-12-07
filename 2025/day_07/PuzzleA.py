@@ -42,8 +42,28 @@ class TachyonMainfold:
             next_location = (location[0] + 1, location[1])
             if next_location[0] == self.max_row:
                 continue  # arrived to last row
+            if self.diagram[next_location[0]][next_location[1]] == ".":
+                if next_location in visited_locations:
+                    continue  # reached a path already walked
+                else:
+                    visited_locations.add(next_location)
+                    locations_to_advance.append(next_location)
+            elif self.diagram[next_location[0]][next_location[1]] == "^":
+                self.split_counter += 1
+                left_location = (next_location[0], next_location[1] - 1)
+                rigth_location = (next_location[0], next_location[1] + 1)
+                if left_location not in visited_locations:
+                    visited_locations.add(next_location)
+                    locations_to_advance.append(next_location)
+                if rigth_location not in visited_locations:
+                    visited_locations.add(next_location)
+                    locations_to_advance.append(next_location)
+            else:
+                raise Exception(
+                    f"Found incorrect symbol: {self.diagram[next_location[0]][next_location[1]]} !"
+                )
 
-    def _advance_beam(location: tuple[int, int]) -> None: ...
+        return self.split_counter
 
 
 def solve_01(diagram: list[list[str]]) -> int:
