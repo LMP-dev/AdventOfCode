@@ -35,8 +35,15 @@ def solve_01(data: Any) -> int:
     ordered_ranges, ingredients_ids = data
     count = 0
 
-    start_range = [a for a, b in ordered_ranges]
-    end_range = [b for a, b in ordered_ranges]
+    # Fusion repeated starting and ending ranges
+
+    start_range = [a for a, _ in ordered_ranges]
+    end_range = [b for _, b in ordered_ranges]
+
+    # if len(start_range) != len(set(start_range)):
+    #     raise Exception("THERE IS REPEATED STARTING RANGE NUMBERS!")
+    # if len(end_range) != len(set(end_range)):
+    #     raise Exception("THERE IS REPEATED ENDING RANGE NUMBERS!")
 
     for id in ingredients_ids:
         for i, start in enumerate(start_range):
