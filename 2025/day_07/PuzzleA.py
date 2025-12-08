@@ -38,8 +38,10 @@ class TachyonMainfold:
         visited_locations: set[tuple[int, int]] = set()
 
         while locations_to_advance:
+            # Extract a location to visit and process it
             location = locations_to_advance.pop()
             next_location = (location[0] + 1, location[1])
+
             if next_location[0] == self.max_row:
                 continue  # arrived to last row
             if self.diagram[next_location[0]][next_location[1]] == ".":
@@ -53,11 +55,11 @@ class TachyonMainfold:
                 left_location = (next_location[0], next_location[1] - 1)
                 rigth_location = (next_location[0], next_location[1] + 1)
                 if left_location not in visited_locations:
-                    visited_locations.add(next_location)
-                    locations_to_advance.append(next_location)
+                    visited_locations.add(left_location)
+                    locations_to_advance.append(left_location)
                 if rigth_location not in visited_locations:
-                    visited_locations.add(next_location)
-                    locations_to_advance.append(next_location)
+                    visited_locations.add(rigth_location)
+                    locations_to_advance.append(rigth_location)
             else:
                 raise Exception(
                     f"Found incorrect symbol: {self.diagram[next_location[0]][next_location[1]]} !"
@@ -87,11 +89,11 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
     solution = solve_01(data)
-    print(f"The solution of the example 1 is {solution}")
-    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    # data = parse_input(file_content)
-    # solution = solve_01(data)
-    # print(f"The solution of the part 1 is {solution}")
+    print(f"The solution of the example 1 is {solution}")  # Solution 21
+    file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    data = parse_input(file_content)
+    solution = solve_01(data)
+    print(f"The solution of the part 1 is {solution}")  # Solution 1590
 
 
 if __name__ == "__main__":
