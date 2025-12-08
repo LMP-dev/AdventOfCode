@@ -13,7 +13,6 @@ class Dial099:
     zero_count: int = 0
 
     def find_0s(self, instructions: list[tuple[str, int]]) -> int:
-        print(f"The dial points to {self.current}")
         for direction, number in instructions:
             ## Remove complete spins
             spins, rem = divmod(number, 100)  # 0 to 99 is 100 numbers
@@ -70,11 +69,11 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
     solution = solve(data)
-    print(f"The solution of the example 1 is {solution}")
+    print(f"The solution of the example 1 is {solution}")  # Solution 3
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve(data)
-    print(f"The solution of the part 1 is {solution}")
+    print(f"The solution of the part 1 is {solution}")  # Solution 1105
 
 
 if __name__ == "__main__":

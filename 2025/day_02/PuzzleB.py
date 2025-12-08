@@ -72,11 +72,11 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
     solution = solve_02(data)
-    print(f"The solution of the example 1 is {solution}")
+    print(f"The solution of the example 1 is {solution}")  # Solution 4174379265
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve_02(data)
-    print(f"The solution of the part 2 is {solution}")
+    print(f"The solution of the part 2 is {solution}")  # Solution 66500947346
 
 
 if __name__ == "__main__":
