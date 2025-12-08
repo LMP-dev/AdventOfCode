@@ -1,6 +1,5 @@
 # Standard library
 from pathlib import Path
-from typing import Any
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -9,41 +8,43 @@ def read_data(
     file_path: Path,
 ) -> list[str]:
     with open(file_path) as file:
-        lines = [line.strip() for line in file]
+        lines = [line.rstrip("\n") for line in file]  # normally .strip()
     return lines
 
 
-def parse_input(file_content: list[str]) -> Any:
-    numbers: list[list[int]] = []
-    operators = None
+def parse_input(file_content: list[str]) -> tuple[list[list[int]], list[str]]:
+    operators: list[str] = file_content[-1].split()
+    numbers_to_operate: list[list[int]] = []
 
-    # Parse line of numbers and store each line
-    for i, line in enumerate(file_content):
-        if i == len(file_content) - 1:
-            operators = line.split()
-        else:
-            numbers.append(line.split())
+    # temp variable reseated each operation
+    group_of_numbers: list[int] = []
 
-    normal_read_numbers = []
-    # Read by columns
-    for index, _ in enumerate(operators):
-        normal_read_numbers.append([int(nums[index]) for nums in numbers])
-    # do not convert
+    for i, _ in enumerate(file_content[0]):
+        # Read cephalopod by columns
+        group = [line[i] for line in file_content[:-1]]
+        # Check end of operation
+        if all(x == " " for x in group):
+            numbers_to_operate.append(group_of_numbers)
+            group_of_numbers = []
+            continue
+        # Create number
+        num_str = ""
+        for character in group:
+            if character == " ":
+                continue
+            else:
+                num_str += character
+        group_of_numbers.append(int(num_str))
+    # Last number treatment
+    numbers_to_operate.append(group_of_numbers)
 
-    # Read numbers by celaphod math
-    temp_list = []
-    # calculate major number
-    # add 0 as strings to other comparing relative lengths
-    # select new numbers (mid 0 should not be considered?)
-    # convert to int
+    if len(operators) != len(numbers_to_operate):
+        raise Exception("DIFFERENT length in list to operate!")
 
-    # TODO
-    numbers_to_operate = []
-
-    return normal_read_numbers, operators
+    return numbers_to_operate, operators
 
 
-def solve_02(data: Any) -> int:
+def solve_02(data: tuple[list[list[int]], list[str]]) -> int:
     numbers_to_operate, operators = data
     total = 0
 
@@ -64,11 +65,11 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "example_1.txt")
     data = parse_input(file_content)
     solution = solve_02(data)
-    print(f"The solution of the example 1 is {solution}")
+    print(f"The solution of the example 1 is {solution}")  # Solution 3263827
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve_02(data)
-    print(f"The solution of the part 2 is {solution}")
+    print(f"The solution of the part 2 is {solution}")  # Solution 11044319475191
 
 
 if __name__ == "__main__":
