@@ -31,19 +31,51 @@ def parse_input(file_content: list[str]) -> Any:
     return sorted(ordered_ranges), ingredient_ids
 
 
+def remove_repeated_values(
+    first_range: list[int], second_range: list[int]
+) -> tuple[list[int], list[int]]:
+    repeated_values = False
+
+    if len(first_range) != len(set(first_range)) or len(second_range) != len(
+        set(second_range)
+    ):
+        print("THERE IS REPEATED STARTING RANGE NUMBERS!")
+        repeated_values = True
+
+    temp_start = first_range.copy()
+    temp_end = second_range.copy()
+
+    if repeated_values:
+        # Treat start ranges
+        last_value = None
+        last_repeated_value = None
+        repeated_indexes: list[list[int]] = []
+        temp_index: list[int] = []
+        for index, value in enumerate(temp_start):
+            if value == last_value:
+                if value == last_repeated_value:
+                    temp_index.append(index)
+                else:
+                    temp_index.append(index - 1)
+                    temp_index.append(index)
+                    last_repeated_value = value
+            else:
+                repeated_indexes.append(temp_index)
+                temp_index = []  # reset temporal list
+            last_value = value
+
+        # Treat end ranges
+
+    return temp_start, temp_end
+
+
 def solve_01(data: Any) -> int:
     ordered_ranges, ingredients_ids = data
     count = 0
 
-    # Fusion repeated starting and ending ranges
-
-    start_range = [a for a, _ in ordered_ranges]
-    end_range = [b for _, b in ordered_ranges]
-
-    # if len(start_range) != len(set(start_range)):
-    #     raise Exception("THERE IS REPEATED STARTING RANGE NUMBERS!")
-    # if len(end_range) != len(set(end_range)):
-    #     raise Exception("THERE IS REPEATED ENDING RANGE NUMBERS!")
+    start_range, end_range = remove_repeated_values(
+        [a for a, _ in ordered_ranges], [b for _, b in ordered_ranges]
+    )
 
     for id in ingredients_ids:
         for i, start in enumerate(start_range):
@@ -74,7 +106,7 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve_01(data)
-    print(f"The solution of the part 1 is {solution}")  # solution 775
+    print(f"The solution of the part 1 is {solution}")  # solution ...
 
 
 if __name__ == "__main__":
