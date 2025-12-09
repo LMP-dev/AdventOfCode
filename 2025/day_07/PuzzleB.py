@@ -22,66 +22,24 @@ def parse_input(file_content: list[str]) -> list[list[str]]:
     return diagram
 
 
-class TachyonMainfold:
-    def __init__(
-        self, diagram: list[list[str]], starting_point: tuple[int, int]
-    ) -> None:
-        self.diagram = diagram
-        self.starting_point = starting_point
-        self.max_row = len(diagram) - 1
-
-    def enter_beam(self) -> int:
-        """Returns the number of times a beam splits"""
-        # Initiate variables
-        self.split_counter = 0
-        locations_to_advance: list[tuple[int, int]] = [self.starting_point]
-        visited_locations: set[tuple[int, int]] = set()
-
-        while locations_to_advance:
-            # Extract a location to visit and process it
-            location = locations_to_advance.pop()
-            next_location = (location[0] + 1, location[1])
-
-            if next_location[0] == self.max_row:
-                continue  # arrived to last row
-            if self.diagram[next_location[0]][next_location[1]] == ".":
-                if next_location in visited_locations:
-                    continue  # reached a path already walked
-                else:
-                    visited_locations.add(next_location)
-                    locations_to_advance.append(next_location)
-            elif self.diagram[next_location[0]][next_location[1]] == "^":
-                self.split_counter += 1
-                left_location = (next_location[0], next_location[1] - 1)
-                rigth_location = (next_location[0], next_location[1] + 1)
-                if left_location not in visited_locations:
-                    visited_locations.add(left_location)
-                    locations_to_advance.append(left_location)
-                if rigth_location not in visited_locations:
-                    visited_locations.add(rigth_location)
-                    locations_to_advance.append(rigth_location)
-            else:
-                raise Exception(
-                    f"Found incorrect symbol: {self.diagram[next_location[0]][next_location[1]]} !"
-                )
-
-        return self.split_counter
-
-
 def solve_02(data: list[list[str]]) -> int:
-    """
-    Assumptions:
-        - No beam gets outside of diagram when splitting
-        - Last row is all "."
-    """
-    # Find starting position
-    for index, char in enumerate(data[0]):
+    # Create dictionary of columns
+    end_tachyon = {i: 0 for i in range(len(data[0]))}
+
+    for i, char in enumerate(data[0]):
         if char == "S":
-            starting_point = (0, index)
+            end_tachyon[i] = 1
 
-    tachyon_mainfold = TachyonMainfold(data, starting_point)
+    # Calculate timelines for each separator line
+    for i in range(2, len(data), 2):
+        for j, char in enumerate(data[i]):
+            if char == "^":
+                timelines = end_tachyon[j]
+                end_tachyon[j - 1] += timelines
+                end_tachyon[j + 1] += timelines
+                end_tachyon[j] = 0
 
-    return tachyon_mainfold.enter_beam()
+    return sum(end_tachyon.values())
 
 
 def main() -> None:
@@ -93,7 +51,7 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve_02(data)
-    print(f"The solution of the part 2 is {solution}")  # Solution ...
+    print(f"The solution of the part 2 is {solution}")  # Solution 20571740188555
 
 
 if __name__ == "__main__":
