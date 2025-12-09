@@ -28,7 +28,7 @@ def parse_input(file_content: list[str]) -> tuple[list[tuple[int, int]], int, in
 
 
 def check_accessible_roll(
-    cell: tuple[int, int], map: set[tuple[int, int]], max_row: int, max_col: int
+    cell: tuple[int, int], map: list[tuple[int, int]], max_row: int, max_col: int
 ) -> bool:
     count = 0
     max_count = 3
