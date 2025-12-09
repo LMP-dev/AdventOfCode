@@ -31,52 +31,91 @@ def parse_input(file_content: list[str]) -> Any:
     return sorted(ordered_ranges), ingredient_ids
 
 
+def _clean_first_list(
+    first_list: list[int], second_list: list[int], inverse_lists: bool
+) -> tuple[list[int], list[int]]:
+    last_value = None
+    last_repeated_value = None
+    repeated_indexes: list[list[int]] = []
+    temp_index: list[int] = []
+
+    # Identify repeated values
+    for index, value in enumerate(first_list):
+        if value == last_value:
+            if value == last_repeated_value:
+                temp_index.append(index)
+            else:
+                temp_index.append(index - 1)
+                temp_index.append(index)
+                last_repeated_value = value
+        else:
+            if temp_index:
+                repeated_indexes.append(temp_index)
+            temp_index = []  # reset temporal list
+        last_value = value
+
+    # Remove repeated values
+    first_cleaned = first_list.copy()
+    second_cleaned = second_list.copy()
+    repeated_indexes.reverse()  # To start from end list so first indexes are mantained
+
+    for indexes in repeated_indexes:
+        to_remove = []
+        max_value = None
+        last_index = None
+        for index in indexes:
+            if max_value is None:
+                max_value = second_list[index]
+                last_index = index
+            else:
+                if inverse_lists:
+                    if max_value > second_list[index]:
+                        to_remove.append(last_index)
+                        max_value = second_list[index]
+                        last_index = index
+                    else:
+                        to_remove.append(index)
+                else:
+                    if max_value < second_list[index]:
+                        to_remove.append(last_index)
+                        max_value = second_list[index]
+                        last_index = index
+                    else:
+                        to_remove.append(index)
+        # Remove from cleaned lists
+        ordered_to_remove = reversed(sorted(to_remove))
+
+        for k in ordered_to_remove:
+            _ = first_cleaned.pop(k)
+            _ = second_cleaned.pop(k)
+
+    return first_cleaned, second_cleaned
+
+
 def remove_repeated_values(
     first_range: list[int], second_range: list[int]
 ) -> tuple[list[int], list[int]]:
-    repeated_values = False
-
     if len(first_range) != len(set(first_range)) or len(second_range) != len(
         set(second_range)
     ):
         print("THERE IS REPEATED STARTING RANGE NUMBERS!")
-        repeated_values = True
-
-    temp_start = first_range.copy()
-    temp_end = second_range.copy()
-
-    if repeated_values:
         # Treat start ranges
-        last_value = None
-        last_repeated_value = None
-        repeated_indexes: list[list[int]] = []
-        temp_index: list[int] = []
-        for index, value in enumerate(temp_start):
-            if value == last_value:
-                if value == last_repeated_value:
-                    temp_index.append(index)
-                else:
-                    temp_index.append(index - 1)
-                    temp_index.append(index)
-                    last_repeated_value = value
-            else:
-                repeated_indexes.append(temp_index)
-                temp_index = []  # reset temporal list
-            last_value = value
-
+        temp_start, temp_end = _clean_first_list(first_range, second_range, False)
         # Treat end ranges
+        end_range, start_range = _clean_first_list(temp_end, temp_start, True)
 
-    return temp_start, temp_end
+        return start_range, end_range
+    return first_range, second_range
 
 
 def solve_01(data: Any) -> int:
     ordered_ranges, ingredients_ids = data
-    count = 0
-
+    # Remove overlaped range values
     start_range, end_range = remove_repeated_values(
         [a for a, _ in ordered_ranges], [b for _, b in ordered_ranges]
     )
 
+    count = 0
     for id in ingredients_ids:
         for i, start in enumerate(start_range):
             if id <= start:
@@ -106,7 +145,7 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve_01(data)
-    print(f"The solution of the part 1 is {solution}")  # solution ...
+    print(f"The solution of the part 1 is {solution}")  # solution (is higher than 775)
 
 
 if __name__ == "__main__":
