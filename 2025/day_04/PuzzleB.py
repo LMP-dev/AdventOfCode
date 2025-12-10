@@ -121,17 +121,16 @@ def solve_02(data: tuple[list[tuple[int, int]], int, int]) -> int:
     count = 0
     changes_last_round = True
 
-    cells_to_review = cells_with_paper.copy()
+    cells_to_review: set[tuple[int, int]] = set(cells_with_paper.copy())
 
     iter = 0
     while changes_last_round:
-        print(f" ITERATION {iter} OF REMOVING PAPER")
-        iter += 1
         cells_to_remove = []
         for cell in cells_to_review:
             if check_accessible_roll(cell, cells_with_paper, max_row, max_col):
                 count += 1
                 cells_to_remove.append(cell)
+
         if cells_to_remove:
             # Remove this round papers
             for cell in cells_to_remove:
@@ -142,7 +141,7 @@ def solve_02(data: tuple[list[tuple[int, int]], int, int]) -> int:
                 next_cells.extend(
                     identify_cells_next_round(cell, cells_with_paper, max_row, max_col)
                 )
-            cells_to_review = next_cells
+            cells_to_review = set(next_cells)
         else:
             changes_last_round = False
 
@@ -155,10 +154,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_02(data)
     print(f"The solution of the example 1 is {solution}")  # Solution 43
-    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    # data = parse_input(file_content)
-    # solution = solve_02(data)
-    # print(f"The solution of the part 2 is {solution}")  # Solution
+    file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    data = parse_input(file_content)
+    solution = solve_02(data)
+    print(f"The solution of the part 2 is {solution}")  # Solution 8727 (slow!)
 
 
 if __name__ == "__main__":
