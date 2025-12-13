@@ -35,18 +35,28 @@ def create_circuits(
 ) -> list[list[tuple[int, int, int]]]:
     circuits: list[list[tuple[int, int, int]]] = []
 
-    for pair in pairs:
-        # Case no point in circuits
+    for p1, p2 in pairs:
+        # Case both points are in circuits
+        if any(p1 in circuit for circuit in circuits) and any(
+            p2 in circuit for circuit in circuits
+        ):
+            #     both in same circuit
+            #     on different circuits
+            ...
 
         # Case only one point in circuits
+        elif any(p1 in circuit for circuit in circuits):
+            ...
 
-        # Case both points are in circuits
-        #     both in same circuit
-        #     on different circuits
+        # Case only one point in circuits
+        elif any(p2 in circuit for circuit in circuits):
+            ...
 
-        ...
+        # Case no points in circuits
+        else:
+            circuits.append([p1, p2])
 
-    # any(x in list for list in circuits)  # circuits of 1 apart or not needed?
+    return circuits
 
 
 def solve_01(data: list[tuple[int, int, int]]) -> int:
