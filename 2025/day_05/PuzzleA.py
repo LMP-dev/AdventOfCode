@@ -14,7 +14,7 @@ def read_data(
 
 
 def parse_input(file_content: list[str]) -> Any:
-    ordered_ranges: list[tuple[int, int]] = []
+    ranges: list[tuple[int, int]] = []
     ingredient_ids: list[int] = []
 
     split_mode = True
@@ -25,97 +25,42 @@ def parse_input(file_content: list[str]) -> Any:
             continue
         if split_mode:
             start, end = line.split("-")
-            ordered_ranges.append((int(start), int(end)))
+            ranges.append((int(start), int(end)))
         else:
             ingredient_ids.append(int(line))
-    return sorted(ordered_ranges), ingredient_ids
+    return ranges, ingredient_ids
 
 
-def _clean_first_list(
-    first_list: list[int], second_list: list[int], inverse_lists: bool
-) -> tuple[list[int], list[int]]:
-    last_value = None
-    last_repeated_value = None
-    repeated_indexes: list[list[int]] = []
-    temp_index: list[int] = []
+def merge_overlaped_ranges(ranges: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    """Returns an ordered range list without overlaped ranges completely inside others"""
+    ordered_ranges = sorted(ranges)
+    simplified_ranges: list[tuple[int, int]] = []
+    last_start, last_end = None, None
 
-    # Identify repeated values
-    for index, value in enumerate(first_list):
-        if value == last_value:
-            if value == last_repeated_value:
-                temp_index.append(index)
-            else:
-                temp_index.append(index - 1)
-                temp_index.append(index)
-                last_repeated_value = value
+    for start, end in ordered_ranges:
+        if last_start is None:
+            last_start = start
+            last_end = end
+            simplified_ranges.append((start, end))
+            continue
+        if start < last_end and end <= last_end:
+            continue
         else:
-            if temp_index:
-                repeated_indexes.append(temp_index)
-            temp_index = []  # reset temporal list
-        last_value = value
+            last_start = start
+            last_end = end
+            simplified_ranges.append((start, end))
 
-    # Remove repeated values
-    first_cleaned = first_list.copy()
-    second_cleaned = second_list.copy()
-    repeated_indexes.reverse()  # To start from end list so first indexes are mantained
-
-    for indexes in repeated_indexes:
-        to_remove = []
-        max_value = None
-        last_index = None
-        for index in indexes:
-            if max_value is None:
-                max_value = second_list[index]
-                last_index = index
-            else:
-                if inverse_lists:
-                    if max_value > second_list[index]:
-                        to_remove.append(last_index)
-                        max_value = second_list[index]
-                        last_index = index
-                    else:
-                        to_remove.append(index)
-                else:
-                    if max_value < second_list[index]:
-                        to_remove.append(last_index)
-                        max_value = second_list[index]
-                        last_index = index
-                    else:
-                        to_remove.append(index)
-        # Remove from cleaned lists
-        ordered_to_remove = reversed(sorted(to_remove))
-
-        for k in ordered_to_remove:
-            _ = first_cleaned.pop(k)
-            _ = second_cleaned.pop(k)
-
-    return first_cleaned, second_cleaned
-
-
-def remove_repeated_values(
-    first_range: list[int], second_range: list[int]
-) -> tuple[list[int], list[int]]:
-    if len(first_range) != len(set(first_range)) or len(second_range) != len(
-        set(second_range)
-    ):
-        print("THERE IS REPEATED STARTING RANGE NUMBERS!")
-        # Treat start ranges
-        temp_start, temp_end = _clean_first_list(first_range, second_range, False)
-        # Treat end ranges
-        end_range, start_range = _clean_first_list(temp_end, temp_start, True)
-
-        return start_range, end_range
-    return first_range, second_range
+    return simplified_ranges
 
 
 def solve_01(data: Any) -> int:
-    ordered_ranges, ingredients_ids = data
+    ranges, ingredients_ids = data
     # Remove overlaped range values
-    start_range, end_range = remove_repeated_values(
-        [a for a, _ in ordered_ranges], [b for _, b in ordered_ranges]
-    )
+    simplified_ranges = merge_overlaped_ranges(ranges)
 
     count = 0
+    start_range = [a for a, _ in simplified_ranges]
+    end_range = [b for _, b in simplified_ranges]
     for id in ingredients_ids:
         for i, start in enumerate(start_range):
             if id <= start:
@@ -145,7 +90,7 @@ def main() -> None:
     file_content = read_data(INPUT_FILE_PATH / "input.txt")
     data = parse_input(file_content)
     solution = solve_01(data)
-    print(f"The solution of the part 1 is {solution}")  # solution (is higher than 775)
+    print(f"The solution of the part 1 is {solution}")  # solution 798
 
 
 if __name__ == "__main__":
