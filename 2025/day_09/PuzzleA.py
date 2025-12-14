@@ -1,6 +1,6 @@
 # Standard library
 from pathlib import Path
-from typing import Any
+from itertools import combinations
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -13,11 +13,12 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]) -> Any:
-    return
+def parse_input(file_content: list[str]) -> list[tuple[int, int]]:
+    return [tuple(map(int, line.split(","))) for line in file_content]
 
 
-def solve_01(data: Any) -> int:
+def solve_01(data: list[tuple[int, int]]) -> int:
+
     # take first point and calculate rest of diagonals to other points
     # sort highest to lowest diagonals
     #     side a = abs(x1-x2)+1
