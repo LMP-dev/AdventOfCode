@@ -18,6 +18,17 @@ def parse_input(file_content: list[str]) -> Any:
 
 
 def solve_01(data: Any) -> int:
+    # DFS (Recursive) Approach (Most Common)
+    #    Start: Begin at the source node.
+    #    Mark & Add: Mark the current node as visited and add it to the current path.
+    #    Explore Neighbors: For each unvisited neighbor of the current node:
+    #    If neighbor is the target: You've found a complete path. Record it.
+    #    If neighbor is not the target: Recursively call the function for that neighbor.
+    #    Backtrack: After exploring all neighbors, unmark the current node and remove it from the path to explore other possibilities.
+    # Key Considerations
+    #    Cycles: Crucial to track visited nodes within a single path to avoid infinite loops in cyclic graphs (e.g., A -> B -> A -> ...).
+    #    Data Structures: Use a list or stack to build the current path and a list of lists/stacks to store all found paths.
+    #    Efficiency: Finding all paths can be computationally expensive (exponential time) for dense graphs, as the number of paths can grow very quickly.
     return
 
 
