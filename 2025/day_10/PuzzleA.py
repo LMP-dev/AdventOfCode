@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Any
 import numpy as np
+from itertools import combinations
 
 INPUT_FILE_PATH = Path(__file__).parent
 
@@ -16,6 +17,37 @@ class Machine:
         self.diagram = light_diagram
         self.schematics = buttons_schematic
         self.requirements = joltage_requirements
+
+        self.min_btn_pressed = None
+
+    def calculate_min_btn_pressed(self) -> None:
+        """Not considering same button repeated!"""
+        num_buttons = 1
+        match_found = False
+
+        while not match_found:
+            # Guard to avoid infinite loop
+            if num_buttons > len(self.schematics):
+                raise Exception(
+                    "No combination of buttons found that creates the diagram"
+                )
+
+            # Check combinations
+            for btn_group in combinations(self.schematics, num_buttons):
+                # Operate
+                result = np.zeros(len(self.diagram), dtype=bool)
+                for button in btn_group:
+                    result ^= button
+                # Check
+                if np.all(self.diagram == result):
+                    match_found = True
+                    break
+
+            # INcrease counter combination size
+            if not match_found:
+                num_buttons += 1
+
+        self.min_btn_pressed = num_buttons
 
 
 def read_data(
@@ -58,9 +90,11 @@ def parse_input(file_content: list[str]) -> list[Machine]:
 
 
 def solve_01(data: list[Machine]) -> int:
-    print(f"The first machine have diagram: {data[0].diagram}")
-    print(f"The first machine have buttons schematics: {data[0].schematics}")
-    return
+    count = 0
+    for machine in data:
+        machine.calculate_min_btn_pressed()
+        count += machine.min_btn_pressed
+    return count
 
 
 def main() -> None:
