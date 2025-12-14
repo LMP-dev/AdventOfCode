@@ -1,8 +1,11 @@
 # Standard library
 from pathlib import Path
-from typing import Any
 
 INPUT_FILE_PATH = Path(__file__).parent
+
+
+class ServerRackGraph:
+    def __init__(self) -> None: ...
 
 
 def read_data(
@@ -13,11 +16,20 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]) -> Any:
-    return
+def parse_input(file_content: list[str]) -> ServerRackGraph:
+    # Create graph class
+    graph = ServerRackGraph()
+
+    for line in file_content:
+        device, raw_output_devices = line.split(":")
+        output_devices = raw_output_devices.split()
+
+        # Add device to graph and also connections
+
+    return graph
 
 
-def solve_01(data: Any) -> int:
+def solve_01(data: ServerRackGraph) -> int:
     # DFS (Recursive) Approach (Most Common)
     #    Start: Begin at the source node.
     #    Mark & Add: Mark the current node as visited and add it to the current path.
