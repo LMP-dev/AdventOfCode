@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 import numpy as np
 from itertools import combinations
+import math
 
 
 INPUT_FILE_PATH = Path(__file__).parent
@@ -14,8 +15,23 @@ class MachineJoltage:
         buttons_schematic: list[tuple[int, ...]],
         joltage_requirements: tuple[int, ...],
     ):
-        self.schematics = buttons_schematic
-        self.requirements = joltage_requirements
+        self.target_counter = joltage_requirements
+
+        self.min_btn_pressed = None
+
+        # Prepare buttons affecting each joltage value
+        self.joltage_buttons = [[] for _ in range(len(joltage_requirements))]
+        for scheme in buttons_schematic:
+            min_joltage = min([self.target_counter[i] for i in scheme])
+            for index in scheme:
+                self.joltage_buttons[index].append({scheme: min_joltage})
+
+    def calculate_min_btn_pressed(self) -> None:
+        num_buttons = 1
+
+        ...
+
+        self.min_btn_pressed = num_buttons
 
 
 def read_data(
@@ -49,8 +65,12 @@ def parse_input(file_content: list[str]) -> list[MachineJoltage]:
     return machines
 
 
-def solve_02(data: Any) -> int:
-    return
+def solve_02(data: list[MachineJoltage]) -> int:
+    count = 0
+    for machine in data:
+        machine.calculate_min_btn_pressed()
+        count += machine.min_btn_pressed
+    return count
 
 
 def main() -> None:
@@ -59,10 +79,10 @@ def main() -> None:
     data = parse_input(file_content)
     solution = solve_02(data)
     print(f"The solution of the example 1 is {solution}")
-    file_content = read_data(INPUT_FILE_PATH / "input.txt")
-    data = parse_input(file_content)
-    solution = solve_02(data)
-    print(f"The solution of the part 2 is {solution}")
+    # file_content = read_data(INPUT_FILE_PATH / "input.txt")
+    # data = parse_input(file_content)
+    # solution = solve_02(data)
+    # print(f"The solution of the part 2 is {solution}")
 
 
 if __name__ == "__main__":
