@@ -7,16 +7,14 @@ from itertools import combinations
 INPUT_FILE_PATH = Path(__file__).parent
 
 
-class Machine:
+class MachineDiagram:
     def __init__(
         self,
         light_diagram: np.ndarray,
         buttons_schematic: list[np.ndarray],
-        joltage_requirements: Any,
     ):
         self.diagram = light_diagram
         self.schematics = buttons_schematic
-        self.requirements = joltage_requirements
 
         self.min_btn_pressed = None
 
@@ -58,11 +56,11 @@ def read_data(
     return lines
 
 
-def parse_input(file_content: list[str]) -> list[Machine]:
+def parse_input(file_content: list[str]) -> list[MachineDiagram]:
     """Avoiding joltage requirements"""
     machines: list[dict[str, np.ndarray | list[np.ndarray]]] = []
     for line in file_content:
-        raw_diagram, *raw_schematics, raw_requirements = line.split()
+        raw_diagram, *raw_schematics, _ = line.split()
 
         # Transform diagram to binary vector
         light_diagram = np.array(
@@ -84,12 +82,12 @@ def parse_input(file_content: list[str]) -> list[Machine]:
             buttons_schematic.append(button_scheme)
 
         # Store machine data
-        machines.append(Machine(light_diagram, buttons_schematic, raw_requirements))
+        machines.append(MachineDiagram(light_diagram, buttons_schematic))
 
     return machines
 
 
-def solve_01(data: list[Machine]) -> int:
+def solve_01(data: list[MachineDiagram]) -> int:
     count = 0
     for machine in data:
         machine.calculate_min_btn_pressed()
